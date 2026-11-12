@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Włoska Sygnalizacja Kolejowa (RFI S.p.A.) – Pełne Opracowanie i Przewodnik</title>
+    <style>
+        :root {
+            --primary: #004b33;
+            --primary-dark: #003322;
+            --accent: #d32f2f;
+            --bg: #f3f4f6;
+            --card: #ffffff;
+            --text: #1f2937;
+            --muted: #4b5563;
+            --border: #e5e7eb;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.65;
+        }
+        header {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            color: #fff;
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            border-bottom: 5px solid var(--accent);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+        }
+        header h1 { font-size: 1.8rem; margin-bottom: 0.4rem; }
+        header p { color: #d1fae5; font-size: 0.95rem; }
+        .search-bar {
+            max-width: 600px;
+            margin: 1rem auto 0;
+        }
+        .search-bar input {
+            width: 100%;
+            padding: 0.65rem 1rem;
+            border-radius: 6px;
+            border: none;
+            font-size: 0.95rem;
+        }
+        .layout {
+            max-width: 1280px;
+            margin: 2rem auto;
+            padding: 0 1.25rem;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+        @media (max-width: 960px) {
+            .layout { grid-template-columns: 1fr; }
+            header { position: static; }
+        }
+        nav {
+            background: var(--card);
+            border-radius: 8px;
+            padding: 1.25rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+            position: sticky;
+            top: 165px;
+            max-height: calc(100vh - 190px);
+            overflow-y: auto;
+        }
+        nav h2 {
+            font-size: 1.15rem;
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.4rem;
+        }
+        nav ul { list-style: none; }
+        nav li { margin-bottom: 0.35rem; }
+        nav a {
+            text-decoration: none;
+            color: var(--text);
+            font-size: 0.9rem;
+            display: block;
+            padding: 0.35rem 0.5rem;
+            border-radius: 4px;
+            transition: background 0.15s;
+        }
+        nav a:hover {
+            background: #ecfdf5;
+            color: var(--primary);
+            font-weight: 600;
+        }
+        main {
+            display: flex;
+            flex-direction: column;
+            gap: 1.75rem;
+        }
+        section {
+            background: var(--card);
+            border-radius: 8px;
+            padding: 1.75rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+        }
+        section h2 {
+            color: var(--primary);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.45rem;
+        }
+        section h3 {
+            color: #111827;
+            margin: 1.25rem 0 0.5rem;
+            font-size: 1.15rem;
+        }
+        p, li { margin-bottom: 0.5rem; }
+        ul, ol { padding-left: 1.4rem; margin-bottom: 0.75rem; }
+        .rule {
+            border-left: 3px solid var(--primary);
+            padding-left: 0.85rem;
+            margin: 0.65rem 0;
+        }
+        .alert {
+            background: #fef2f2;
+            border-left: 4px solid var(--accent);
+            padding: 0.85rem 1rem;
+            border-radius: 4px;
+            margin: 0.85rem 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.92rem;
+        }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 0.6rem 0.75rem;
+            text-align: left;
+            vertical-align: top;
+        }
+        th {
+            background: #ecfdf5;
+            color: var(--primary);
+            font-weight: 600;
+        }
+        tr:nth-child(even) td { background: #f9fafb; }
+        .sig-dot {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            margin-right: 4px;
+            vertical-align: middle;
+            border: 1px solid #222;
+        }
+        .red { background: #e53935; }
+        .yellow { background: #fdd835; }
+        .green { background: #43a047; }
+        .white { background: #ffffff; }
+        .blue { background: #1e88e5; }
+        .badge {
+            display: inline-block;
+            background: var(--primary);
+            color: #fff;
+            padding: 0.1rem 0.45rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+        .signal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .signal-card {
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1rem;
+            background: #fafafa;
+            text-align: center;
+        }
+        .signal-card img {
+            max-width: 100px;
+            height: auto;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Włoska Sygnalizacja Kolejowa (La Segnaletica Ferroviaria Italiana – RFI S.p.A.)</h1>
+    <p>Kompletny przewodnik po semaforach, manewrach, blokadzie i systemach kabinowych</p>
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Szukaj w treści (np. semafor, manewry, ETCS, SCMT, PL, 30 km/h)..." onkeyup="filterSections()">
+    </div>
+</header>
+
+<div class="layout">
+    <nav>
+        <h2>Spis treści</h2>
+        <ul>
+            <li><a href="#ch1">1. Wprowadzenie i przepisy ogólne</a></li>
+            <li><a href="#ch2">2. Sygnały dla pociągów i semafory</a></li>
+            <li><a href="#ch3">3. Obrazy sygnałowe (Światła i Tarcze)</a></li>
+            <li><a href="#ch4">4. Sygnały manewrowe</a></li>
+            <li><a href="#ch5">5. Sygnalizacja w kabinie i ETCS / SCMT</a></li>
+            <li><a href="#ch6">6. Sygnały osłony przejazdów (PL)</a></li>
+            <li><a href="#ch7">7. Pozostałe działy (8–20)</a></li>
+        </ul>
+    </nav>
+
+    <main id="contentArea">
+        <section id="ch1">
+            <h2>1. Wprowadzenie i przepisy ogólne</h2>
+            <p class="rule">Opracowanie na podstawie norm RFI S.p.A. (wydanie aktualne). Sygnałów należy przestrzegać bezwzględnie. Brak sygnału lub niepełne wskazanie oznacza sygnał „Stój” (via impedita).</p>
+            <h3>Wybrane akronimy:</h3>
+            <ul>
+                <li><strong>AdC:</strong> Maszynista (Agente di condotta)</li>
+                <li><strong>DM / DCO:</strong> Dyżurny ruchu / Dyspozytor centralny</li>
+                <li><strong>BA / BEM:</strong> Blokada samoczynna / blokada ręczna</li>
+                <li><strong>PL:</strong> Przejazd kolejowo-drogowy (Passaggio a livello)</li>
+            </ul>
+        </section>
+
+        <section id="ch2">
+            <h2>2. Semafory pociągowe (Segnali di 1ª Categoria i Avviso)</h2>
+            <p>Włoski system opiera się na rozdziale semaforów bezwzględnych od tarcz ostrzegawczych:</p>
+            <ul>
+                <li><strong>Semafory 1. kategorii:</strong> Ustawione tuż przed punktem chronionym (wjazd na stację, odgałęzienie – <em>bivo</em>). Wskazanie czerwone („Stój”) oznacza bezwzględny zakaz minięcia. Dolna połowa masztu jest czarna.</li>
+                <li><strong>Tarcze ostrzegawcze (Avviso):</strong> Poprzedzają semafory w odległości drogi hamowania. Ich maszt pomalowany jest w biało-czarne pasy.</li>
+                <li><strong>Kształt tarcz:</strong> Po lewej stronie toru (lub nad osią) tarcze są <strong>okrągłe</strong>; po prawej stronie toru są <strong>kwadratowe</strong> (często z białą strzałką pod kątem 45°).</li>
+            </ul>
+        </section>
+
+        <section id="ch3">
+            <h2>3. Obrazy sygnałowe – Przegląd świateł</h2>
+            <div class="signal-grid">
+                <div class="signal-card">
+                    <span class="badge red">Stój</span>
+                    <p><strong>1 światło czerwone</strong><br>Bezwzględny zakaz jazdy (semafor 1. kategorii).</p>
+                </div>
+                <div class="signal-card">
+                    <span class="badge green">Wolna droga</span>
+                    <p><strong>1 światło zielone</strong><br>Jazda z maksymalną prędkością szlakową.</p>
+                </div>
+                <div class="signal-card">
+                    <span class="badge yellow">Uprzedzenie Stój</span>
+                    <p><strong>1 światło żółte (tarcza)</strong><br>Następny semafor wskazuje Stój. Dojazd do 30 km/h w odl. 200 m.</p>
+                </div>
+                <div class="signal-card">
+                    <span class="badge green">Z ograniczeniem</span>
+                    <p><strong>Czerwone nad zielonym</strong><br>Wolna droga z potwierdzeniem ograniczenia do 30, 60 lub 100 km/h.</p>
+                </div>
+                <div class="signal-card">
+                    <span class="badge yellow">Skrócona odległość</span>
+                    <p><strong>Żółte migające</strong><br>Następny semafor w skróconej odległości przed Stój lub rozjazdem.</p>
+                </div>
+                <div class="signal-card">
+                    <span class="badge yellow">Tor krótki / zajęty</span>
+                    <p><strong>Dwa światła żółte</strong><br>Uprzedzenie o Stój w odl. nadzwyczaj skróconej (&lt;350 m) lub torze zajętym.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="ch4">
+            <h2>4. Sygnały manewrowe (Segnali per le manovre)</h2>
+            <p>Manewry na stacjach włoskich prowadzone są za pomocą tarcz i wskaźników:</p>
+            <ul>
+                <li><strong>Tarcze niskie obracalne (Marmotte):</strong> Tradycyjne tarcze mechaniczne do manewrów.</li>
+                <li><strong>Tarcze manewrowe niskie świetlne (Segnali bassi luminosi):</strong><ul>
+                    <li><strong>Dwa światła niebieskie w poziomie:</strong> Manewry zabronione (Stój).</li>
+                    <li><strong>Dwa światła niebieskie ukośnie w górę (w prawo):</strong> Zezwolenie na manewry (wolna droga manewrowa).</li>
+                    <li><strong>Dwa światła białe w pionie (migające):</strong> Wskazują pociągom, że grupowy semafor wyjazdowy został podany na wolną drogę dla danego toru.</li>
+                </ul></li>
+                <li><strong>Wysokie sygnały manewrowe:</strong> Stosowane tam, gdzie tarcze niskie są zasłonięte lub niewidoczne.</li>
+                <li><strong>Granica manewrów (Picchetto limite delle manovre):</strong> Wskaźnik wyznaczający skrajny punkt dozwolonego ruchu manewrowego.</li>
+            </ul>
+        </section>
+
+        <section id="ch5">
+            <h2>5. Sygnalizacja w kabinie oraz systemy ETCS i SCMT</h2>
+            <ul>
+                <li><strong>RSC (Powtarzanie ciągłe w kabinie):</strong> Wykorzystuje kody torowe (50 Hz / 178 Hz) wyświetlające na pulpicie kody AC, 75, 120, 180, 270.</li>
+                <li><strong>SCMT (Narodowy system kontroli biegu):</strong> Nadzoruje prędkości, zwolnienia, czuwak (Vigilante) oraz hamowanie nagłe <em>Train-Trip</em> w przypadku minięcia semafora „Stój”.</li>
+                <li><strong>ERTMS/ETCS Poziom 2 (L2):</strong> Na liniach AV/AC oraz nowoczesnych szlakach często bez tradycyjnych semaforów. Kluczowe wskaźniki przytorowe:<ul>
+                    <li><strong>Stop Marker:</strong> Niebieska kwadratowa tablica z pomarańczową/żółtą strzałką (koniec zezwolenia na jazdę – EOA).</li>
+                    <li><strong>Location Marker:</strong> Niebieska tablica z białym trójkątem lub biała tablica z czarną strzałką (koniec sekcji blokowej).</li>
+                </ul></li>
+            </ul>
+        </section>
+
+        <section id="ch6">
+            <h2>6. Sygnały osłony przejazdów kolejowo-drogowych (PL)</h2>
+            <ul>
+                <li>Przejazdy z rogatkami automatycznymi osłaniane są tarczami z trzema światłami poziomymi (czerwonymi w stanie „Stój” / żółtymi na tarczy ostrzegawczej) oraz dwoma zielonymi pionowymi („Wolna droga”).</li>
+                <li>Przejazdy bez rogatek z sygnalizacją drogową posiadają przy torze białe światło migające. W razie jego braku maszynista stosuje ograniczenie do 4 km/h na przejeździe.</li>
+            </ul>
+        </section>
+
+        <section id="ch7">
+            <h2>7. Pozostałe elementy infrastruktury (Rozdziały 8–20)</h2>
+            <ul>
+                <li><strong>Wskaźniki miejsca zatrzymania:</strong> Tablice 4-kwadrantowe, tablice długości składu („nnn m”) oraz tablice dla pociągów ETR („ETR xxx”, „2 ETR”).</li>
+                <li><strong>Sygnały sieci trakcyjnej T.E.:</strong> Nakazy opuszczenia pantografów lub wyłączenia poboru prądu (np. przy zmianie zasilania 3 kV DC na 25 kV AC).</li>
+                <li><strong>Wskaźniki zwrotnicowe i ukresy:</strong> Tarcze zwrotnicowe, wskaźniki rozjazdów rozpruwalnych i nierozpruwalnych oraz słupki ukresowe.</li>
+            </ul>
+        </section>
+    </main>
+</div>
+
+<footer>
+    Kompletne opracowanie włoskiej sygnalizacji kolejowej (RFI S.p.A.).
+</footer>
+
+<script>
+function filterSections() {
+    const query = document.getElementById('searchInput').value.toLowerCase();
+    const sections = document.querySelectorAll('main section');
+    sections.forEach(sec => {
+        const text = sec.innerText.toLowerCase();
+        sec.style.display = text.includes(query) ? '' : 'none';
+    });
+}
+</script>
+</body>
+</html>
