@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Włoska Sygnalizacja Kolejowa (RFI S.p.A.) – Pełne Opracowanie i Przewodnik</title>
+    <title>Włoska Sygnalizacja Kolejowa (RFI S.p.A.) – Kompletny Przewodnik Ekspercki</title>
     <style>
         :root {
             --primary: #004b33;
@@ -122,13 +122,6 @@
             padding-left: 0.85rem;
             margin: 0.65rem 0;
         }
-        .alert {
-            background: #fef2f2;
-            border-left: 4px solid var(--accent);
-            padding: 0.85rem 1rem;
-            border-radius: 4px;
-            margin: 0.85rem 0;
-        }
         table {
             width: 100%;
             border-collapse: collapse;
@@ -147,20 +140,6 @@
             font-weight: 600;
         }
         tr:nth-child(even) td { background: #f9fafb; }
-        .sig-dot {
-            display: inline-block;
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            margin-right: 4px;
-            vertical-align: middle;
-            border: 1px solid #222;
-        }
-        .red { background: #e53935; }
-        .yellow { background: #fdd835; }
-        .green { background: #43a047; }
-        .white { background: #ffffff; }
-        .blue { background: #1e88e5; }
         .badge {
             display: inline-block;
             background: var(--primary);
@@ -170,12 +149,10 @@
             font-size: 0.8rem;
             font-weight: 600;
         }
-        footer {
-            text-align: center;
-            padding: 2rem;
-            color: var(--muted);
-            font-size: 0.9rem;
-        }
+        .badge.red { background: #dc2626; }
+        .badge.green { background: #16a34a; }
+        .badge.yellow { background: #ca8a04; }
+        .badge.blue { background: #2563eb; }
         .signal-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -190,9 +167,18 @@
             text-align: center;
         }
         .signal-card img {
-            max-width: 100px;
+            max-width: 120px;
             height: auto;
             margin-bottom: 0.5rem;
+            border: 1px solid var(--border);
+            background: #fff;
+            border-radius: 4px;
+        }
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--muted);
+            font-size: 0.9rem;
         }
     </style>
 </head>
@@ -200,9 +186,9 @@
 
 <header>
     <h1>Włoska Sygnalizacja Kolejowa (La Segnaletica Ferroviaria Italiana – RFI S.p.A.)</h1>
-    <p>Kompletny przewodnik po semaforach, manewrach, blokadzie i systemach kabinowych</p>
+    <p>Pełny opis semaforów, tarcz manewrowych, układów blokowych i wskaźników z ilustracjami</p>
     <div class="search-bar">
-        <input type="text" id="searchInput" placeholder="Szukaj w treści (np. semafor, manewry, ETCS, SCMT, PL, 30 km/h)..." onkeyup="filterSections()">
+        <input type="text" id="searchInput" placeholder="Szukaj (np. semafor, manewry, awaria, ETCS, SCMT, PL, zwrotnice)..." onkeyup="filterSections()">
     </div>
 </header>
 
@@ -210,117 +196,113 @@
     <nav>
         <h2>Spis treści</h2>
         <ul>
-            <li><a href="#ch1">1. Wprowadzenie i przepisy ogólne</a></li>
-            <li><a href="#ch2">2. Sygnały dla pociągów i semafory</a></li>
-            <li><a href="#ch3">3. Obrazy sygnałowe (Światła i Tarcze)</a></li>
-            <li><a href="#ch4">4. Sygnały manewrowe</a></li>
-            <li><a href="#ch5">5. Sygnalizacja w kabinie i ETCS / SCMT</a></li>
-            <li><a href="#ch6">6. Sygnały osłony przejazdów (PL)</a></li>
-            <li><a href="#ch7">7. Pozostałe działy (8–20)</a></li>
+            <li><a href="#ch1">1. Wprowadzenie i ogólne zasady</a></li>
+            <li><a href="#ch2">2. Semafory 1. kategorii i tarcze ostrzegawcze</a></li>
+            <li><a href="#ch3">3. Przegląd obrazów sygnałowych (ze zdjęciami)</a></li>
+            <li><a href="#ch4">4. Sygnały manewrowe i tarcze niskie</a></li>
+            <li><a href="#ch5">5. Przejazdy kolejowo-drogowe (PL)</a></li>
+            <li><a href="#ch6">6. Sygnalizacja w kabinie (SCMT / ETCS)</a></li>
+            <li><a href="#ch7">7. Sieć trakcyjna (T.E.) i wskaźniki zwrotnicowe</a></li>
         </ul>
     </nav>
 
     <main id="contentArea">
         <section id="ch1">
             <h2>1. Wprowadzenie i przepisy ogólne</h2>
-            <p class="rule">Opracowanie na podstawie norm RFI S.p.A. (wydanie aktualne). Sygnałów należy przestrzegać bezwzględnie. Brak sygnału lub niepełne wskazanie oznacza sygnał „Stój” (via impedita).</p>
-            <h3>Wybrane akronimy:</h3>
+            <p class="rule">Sygnałów należy przestrzegać bezwzględnie. Brak sygnału lub niepełne wskazanie oznacza sygnał „Stój” (via impedita). Oświetlenie nocne obowiązuje od zachodu do wschodu słońca.</p>
+            <h3>Najważniejsze skróty:</h3>
             <ul>
                 <li><strong>AdC:</strong> Maszynista (Agente di condotta)</li>
-                <li><strong>DM / DCO:</strong> Dyżurny ruchu / Dyspozytor centralny</li>
-                <li><strong>BA / BEM:</strong> Blokada samoczynna / blokada ręczna</li>
+                <li><strong>DM:</strong> Dyżurny ruchu (Dirigente Movimento)</li>
+                <li><strong>DCO:</strong> Dyspozytor centralny (Dirigente Centrale Operativo)</li>
+                <li><strong>BA / BEM:</strong> Samoczynna blokada liniowa / Ręczna blokada elektryczna</li>
                 <li><strong>PL:</strong> Przejazd kolejowo-drogowy (Passaggio a livello)</li>
             </ul>
         </section>
 
         <section id="ch2">
-            <h2>2. Semafory pociągowe (Segnali di 1ª Categoria i Avviso)</h2>
-            <p>Włoski system opiera się na rozdziale semaforów bezwzględnych od tarcz ostrzegawczych:</p>
+            <h2>2. Semafory 1. kategorii i tarcze ostrzegawcze</h2>
+            <p>System RFI opiera się na ścisłym podziale:</p>
             <ul>
-                <li><strong>Semafory 1. kategorii:</strong> Ustawione tuż przed punktem chronionym (wjazd na stację, odgałęzienie – <em>bivo</em>). Wskazanie czerwone („Stój”) oznacza bezwzględny zakaz minięcia. Dolna połowa masztu jest czarna.</li>
-                <li><strong>Tarcze ostrzegawcze (Avviso):</strong> Poprzedzają semafory w odległości drogi hamowania. Ich maszt pomalowany jest w biało-czarne pasy.</li>
-                <li><strong>Kształt tarcz:</strong> Po lewej stronie toru (lub nad osią) tarcze są <strong>okrągłe</strong>; po prawej stronie toru są <strong>kwadratowe</strong> (często z białą strzałką pod kątem 45°).</li>
+                <li><strong>Semafory 1. kategorii (Segnali di 1ª categoria):</strong> Ustawiane tuż przed punktem chronionym (wjazd na stację, bivo – odgałęzienie). Wskazanie czerwone („Stój”) zabrania minięcia. Dolna połowa masztu jest czarna.</li>
+                <li><strong>Tarcze ostrzegawcze (Segnali di avviso):</strong> Poprzedzają semafory w odległości drogi hamowania. Ich maszt ma biało-czarne pasy.</li>
+                <li><strong>Kształt tarczy:</strong> Po lewej stronie toru (lub nad osią) tarcze są <strong>okrągłe</strong>; po prawej stronie toru są <strong>kwadratowe</strong> (często z białą strzałką pod kątem 45° w stronę toru).</li>
             </ul>
         </section>
 
         <section id="ch3">
-            <h2>3. Obrazy sygnałowe – Przegląd świateł</h2>
+            <h2>3. Przegląd obrazów sygnałowych z grafikami poglądowymi</h2>
             <div class="signal-grid">
                 <div class="signal-card">
-                    <span class="badge red">Stój</span>
-                    <p><strong>1 światło czerwone</strong><br>Bezwzględny zakaz jazdy (semafor 1. kategorii).</p>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Segnale_di_1%C2%AA_categoria_%28Italia%29_-_Via_impedita.svg/120px-Segnale_di_1%C2%AA_categoria_%28Italia%29_-_Via_impedita.svg.png" alt="Stój">
+                    <span class="badge red">Stój (Via impedita)</span>
+                    <p><strong>1 światło czerwone</strong><br>Bezwzględny zakaz jazdy.</p>
                 </div>
                 <div class="signal-card">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Segnale_di_1%C2%AA_categoria_%28Italia%29_-_Via_libera.svg/120px-Segnale_di_1%C2%AA_categoria_%28Italia%29_-_Via_libera.svg.png" alt="Wolna droga">
                     <span class="badge green">Wolna droga</span>
-                    <p><strong>1 światło zielone</strong><br>Jazda z maksymalną prędkością szlakową.</p>
+                    <p><strong>1 światło zielone</strong><br>Jazda z prędkością szlakową.</p>
                 </div>
                 <div class="signal-card">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Segnale_di_avviso_%28Italia%29_-_Avviso_di_via_impedita.svg/120px-Segnale_di_avviso_%28Italia%29_-_Avviso_di_via_impedita.svg.png" alt="Tarcza ostrzegawcza">
                     <span class="badge yellow">Uprzedzenie Stój</span>
-                    <p><strong>1 światło żółte (tarcza)</strong><br>Następny semafor wskazuje Stój. Dojazd do 30 km/h w odl. 200 m.</p>
+                    <p><strong>1 światło żółte (tarcza)</strong><br>Następny semafor wskazuje Stój (dojazd do 30 km/h).</p>
                 </div>
                 <div class="signal-card">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Segnale_di_1%C2%AA_categoria_%28Italia%29_-_Via_libera_con_riduzione_di_velocit%C3%A0.svg/120px-Segnale_di_1%C2%AA_categoria_%28Italia%29_-_Via_libera_con_riduzione_di_velocit%C3%A0.svg.png" alt="Czerwone nad zielonym">
                     <span class="badge green">Z ograniczeniem</span>
-                    <p><strong>Czerwone nad zielonym</strong><br>Wolna droga z potwierdzeniem ograniczenia do 30, 60 lub 100 km/h.</p>
-                </div>
-                <div class="signal-card">
-                    <span class="badge yellow">Skrócona odległość</span>
-                    <p><strong>Żółte migające</strong><br>Następny semafor w skróconej odległości przed Stój lub rozjazdem.</p>
-                </div>
-                <div class="signal-card">
-                    <span class="badge yellow">Tor krótki / zajęty</span>
-                    <p><strong>Dwa światła żółte</strong><br>Uprzedzenie o Stój w odl. nadzwyczaj skróconej (&lt;350 m) lub torze zajętym.</p>
+                    <p><strong>Czerwone nad zielonym</strong><br>Wolna droga z ograniczeniem do 30, 60 lub 100 km/h.</p>
                 </div>
             </div>
         </section>
 
         <section id="ch4">
-            <h2>4. Sygnały manewrowe (Segnali per le manovre)</h2>
-            <p>Manewry na stacjach włoskich prowadzone są za pomocą tarcz i wskaźników:</p>
+            <h2>4. Sygnały manewrowe i tarcze niskie</h2>
+            <p>Ruch manewrowy na stacjach RFI kierowany jest za pomocą:</p>
             <ul>
-                <li><strong>Tarcze niskie obracalne (Marmotte):</strong> Tradycyjne tarcze mechaniczne do manewrów.</li>
+                <li><strong>Tarcze niskie obracalne (Marmotte):</strong> Mechaniczne tarcze obrotowe stosowane przy manewrach.</li>
                 <li><strong>Tarcze manewrowe niskie świetlne (Segnali bassi luminosi):</strong><ul>
                     <li><strong>Dwa światła niebieskie w poziomie:</strong> Manewry zabronione (Stój).</li>
                     <li><strong>Dwa światła niebieskie ukośnie w górę (w prawo):</strong> Zezwolenie na manewry (wolna droga manewrowa).</li>
-                    <li><strong>Dwa światła białe w pionie (migające):</strong> Wskazują pociągom, że grupowy semafor wyjazdowy został podany na wolną drogę dla danego toru.</li>
+                    <li><strong>Dwa światła białe w pionie (migające):</strong> Informacja dla pociągu, że semafor wyjazdowy grupowy został podany na wolną drogę dla danego toru.</li>
                 </ul></li>
-                <li><strong>Wysokie sygnały manewrowe:</strong> Stosowane tam, gdzie tarcze niskie są zasłonięte lub niewidoczne.</li>
-                <li><strong>Granica manewrów (Picchetto limite delle manovre):</strong> Wskaźnik wyznaczający skrajny punkt dozwolonego ruchu manewrowego.</li>
+                <li><strong>Wskaźnik granicy manewrów (Picchetto limite delle manovre):</strong> Oznacza skrajny punkt, do którego dozwolone są manewry.</li>
             </ul>
         </section>
 
         <section id="ch5">
-            <h2>5. Sygnalizacja w kabinie oraz systemy ETCS i SCMT</h2>
+            <h2>5. Sygnały osłony przejazdów kolejowo-drogowych (PL)</h2>
             <ul>
-                <li><strong>RSC (Powtarzanie ciągłe w kabinie):</strong> Wykorzystuje kody torowe (50 Hz / 178 Hz) wyświetlające na pulpicie kody AC, 75, 120, 180, 270.</li>
-                <li><strong>SCMT (Narodowy system kontroli biegu):</strong> Nadzoruje prędkości, zwolnienia, czuwak (Vigilante) oraz hamowanie nagłe <em>Train-Trip</em> w przypadku minięcia semafora „Stój”.</li>
-                <li><strong>ERTMS/ETCS Poziom 2 (L2):</strong> Na liniach AV/AC oraz nowoczesnych szlakach często bez tradycyjnych semaforów. Kluczowe wskaźniki przytorowe:<ul>
-                    <li><strong>Stop Marker:</strong> Niebieska kwadratowa tablica z pomarańczową/żółtą strzałką (koniec zezwolenia na jazdę – EOA).</li>
-                    <li><strong>Location Marker:</strong> Niebieska tablica z białym trójkątem lub biała tablica z czarną strzałką (koniec sekcji blokowej).</li>
-                </ul></li>
+                <li><strong>Przejazdy z rogatkami automatycznymi:</strong> Osłaniane specjalnymi semarahorami z tarczą wyposażoną w grupy świateł (trzy czerwone poziome = Stój / dwa zielone pionowe = Wolna droga). Tarcza ostrzegawcza ma trzy żółte światła poziome.</li>
+                <li><strong>Przejazdy bez rogatek z sygnalizacją drogową:</strong> Osłaniane od strony toru prostokątną tablicą w żółto-czarną szachownicę z białym światłem migającym. W razie awarii (brak migania) maszynista podaje sygnał „Baczność” i najeżdża na przejazd z prędkością maks. <strong>4 km/h</strong>.</li>
             </ul>
         </section>
 
         <section id="ch6">
-            <h2>6. Sygnały osłony przejazdów kolejowo-drogowych (PL)</h2>
+            <h2>6. Sygnalizacja w kabinie (RSC, SCMT, ETCS)</h2>
             <ul>
-                <li>Przejazdy z rogatkami automatycznymi osłaniane są tarczami z trzema światłami poziomymi (czerwonymi w stanie „Stój” / żółtymi na tarczy ostrzegawczej) oraz dwoma zielonymi pionowymi („Wolna droga”).</li>
-                <li>Przejazdy bez rogatek z sygnalizacją drogową posiadają przy torze białe światło migające. W razie jego braku maszynista stosuje ograniczenie do 4 km/h na przejeździe.</li>
+                <li><strong>RSC (Ripetizione Continua dei Segnali):</strong> Ciągłe powtarzanie sygnałów w kabinie maszynisty (kody torowe 50 Hz / 178 Hz: AC, 75, 120, 180, 270).</li>
+                <li><strong>SCMT (Sistema Controllo Marcia Treno):</strong> Narodowy system nadzoru prędkości z balisami i pętlami. Wymusza nagłe hamowanie (<em>Train-Trip</em>) w razie minięcia semafora „Stój”.</li>
+                <li><strong>ERTMS/ETCS Poziom 2 (L2):</strong> Stosowany na liniach dużych prędkości (AV/AC) bez tradycyjnych semaforów. Przy torze stoją:<ul>
+                    <li><strong>Stop Marker:</strong> Niebieska kwadratowa tablica z pomarańczową/żółtą strzałką (koniec zezwolenia na jazdę – EOA).</li>
+                    <li><strong>Location Marker:</strong> Niebieska lub biała tablica ze strzałką oznaczająca koniec sekcji blokowej.</li>
+                </ul></li>
             </ul>
         </section>
 
         <section id="ch7">
-            <h2>7. Pozostałe elementy infrastruktury (Rozdziały 8–20)</h2>
+            <h2>7. Sieć trakcyjna (T.E.) i wskaźniki zwrotnicowe</h2>
             <ul>
-                <li><strong>Wskaźniki miejsca zatrzymania:</strong> Tablice 4-kwadrantowe, tablice długości składu („nnn m”) oraz tablice dla pociągów ETR („ETR xxx”, „2 ETR”).</li>
-                <li><strong>Sygnały sieci trakcyjnej T.E.:</strong> Nakazy opuszczenia pantografów lub wyłączenia poboru prądu (np. przy zmianie zasilania 3 kV DC na 25 kV AC).</li>
-                <li><strong>Wskaźniki zwrotnicowe i ukresy:</strong> Tarcze zwrotnicowe, wskaźniki rozjazdów rozpruwalnych i nierozpruwalnych oraz słupki ukresowe.</li>
+                <li><strong>Sygnały T.E. (Trazione Elettrica):</strong> Wskaźniki nakazujące opuszczenie pantografów lub wyłączenie poboru prądu (np. przy strefach neutralnych lub zmianie systemu zasilania 3 kV DC na 25 kV AC 50 Hz).</li>
+                <li><strong>Tarcze i wskaźniki zwrotnicowe:</strong> Wskazują położenie iglic zwrotnic (np. tarcze zwrotnicowe dla zwrotnic zwykłych i angielskich, wskaźniki dla rozjazdów rozpruwalnych).</li>
+                <li><strong>Ukresy (Traversa limite di stazionamento):</strong> Oznaczają punkt skrajny, za którym musi zatrzymać się pojazd, aby nie kolidować z pociągiem na sąsiednim torze.</li>
             </ul>
         </section>
     </main>
 </div>
 
 <footer>
-    Kompletne opracowanie włoskiej sygnalizacji kolejowej (RFI S.p.A.).
+    Kompletne opracowanie i baza wiedzy o włoskiej sygnalizacji kolejowej (RFI S.p.A.).
 </footer>
 
 <script>
