@@ -1,1185 +1,627 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Menu Restauracji - Wersja Polska</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BawełnaApp - Symulator Farmy</title>
   <style>
-    :root {
-      --bg-color: #faf8f5;
-      --card-bg: #ffffff;
-      --text-main: #2c2c2c;
-      --text-muted: #666666;
-      --accent: #1d4e69;
-      --price-color: #b5542c;
-      --border-color: #e6e2dc;
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background: #1e272e; color: #f5f6fa; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    
+    /* Górny pasek HUD */
+    #hud {
+      background: #2f3640; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 2px solid #353b48; z-index: 10;
     }
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    .hud-group { display: flex; gap: 20px; align-items: center; }
+    .stat-box { background: #1e272e; padding: 8px 14px; border-radius: 8px; border: 1px solid #485460; font-weight: bold; }
+    .money { color: #4cd137; font-size: 1.1rem; }
+    .clock { color: #fbc531; font-size: 1.1rem; }
+    .status-badge { padding: 4px 10px; border-radius: 12px; font-size: 0.85rem; background: #485460; }
+    .status-work { background: #44bd32; color: #fff; }
+
+    /* Przyciski akcji */
+    button {
+      background: #0097e6; color: white; border: none; padding: 9px 14px; border-radius: 6px;
+      cursor: pointer; font-weight: 600; transition: 0.15s;
     }
-    body {
-      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      line-height: 1.5;
-      padding: 20px;
+    button:hover:not(:disabled) { background: #00a8ff; transform: translateY(-1px); }
+    button:disabled { background: #57606f; cursor: not-allowed; opacity: 0.7; }
+    button.btn-boost { background: #e84118; }
+    button.btn-boost:hover:not(:disabled) { background: #ff5252; }
+    button.btn-build { background: #8c7ae6; }
+    button.btn-build.active { background: #fbc531; color: #1e272e; }
+
+    /* Główny obszar gry */
+    #main-area { display: flex; flex: 1; position: relative; }
+    canvas { flex: 1; display: block; cursor: crosshair; background: #6ab04c; }
+
+    /* Prawy panel boczny (Chata / Sklep) */
+    #sidebar {
+      width: 340px; background: #2f3640; border-left: 2px solid #353b48; padding: 20px;
+      display: flex; flex-direction: column; gap: 16px; overflow-y: auto;
     }
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-      background: var(--card-bg);
-      padding: 32px;
-      border-radius: 12px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-    }
-    header {
-      text-align: center;
-      margin-bottom: 36px;
-      padding-bottom: 20px;
-      border-bottom: 2px solid var(--accent);
-    }
-    header h1 {
-      font-size: 2.2rem;
-      color: var(--accent);
-      letter-spacing: 2px;
-      text-transform: uppercase;
-    }
-    section {
-      margin-bottom: 36px;
-    }
-    section h2 {
-      font-size: 1.35rem;
-      color: var(--accent);
-      border-bottom: 1px solid var(--border-color);
-      padding-bottom: 8px;
-      margin-bottom: 16px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-    .menu-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      padding: 12px 0;
-      border-bottom: 1px dashed var(--border-color);
-      gap: 16px;
-    }
-    .menu-item:last-child {
-      border-bottom: none;
-    }
-    .item-info {
-      flex: 1;
-    }
-    .item-title {
-      font-weight: 700;
-      font-size: 1.05rem;
-      color: var(--text-main);
-    }
-    .item-orig {
-      font-weight: 400;
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      font-style: italic;
-    }
-    .item-desc {
-      font-size: 0.92rem;
-      color: var(--text-muted);
-      margin-top: 4px;
-    }
-    .item-price {
-      font-weight: 700;
-      font-size: 1.05rem;
-      color: var(--price-color);
-      white-space: nowrap;
-    }
-    .allergens-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      list-style: none;
-      margin-top: 12px;
-    }
-    .allergens-list li {
-      background: var(--bg-color);
-      border: 1px solid var(--border-color);
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 0.9rem;
-      color: var(--text-muted);
-    }
-    @media (max-width: 600px) {
-      .container {
-        padding: 18px;
-      }
-      header h1 {
-        font-size: 1.7rem;
-      }
-      section h2 {
-        font-size: 1.15rem;
-      }
-    }
+    .panel-card { background: #1e272e; padding: 15px; border-radius: 10px; border: 1px solid #485460; }
+    .panel-card h3 { margin-bottom: 10px; color: #fbc531; border-bottom: 1px solid #353b48; padding-bottom: 6px; }
+    .panel-row { display: flex; justify-content: space-between; align-items: center; margin: 8px 0; font-size: 0.92rem; }
+    .worker-list { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; max-height: 150px; overflow-y: auto; }
+    .worker-item { background: #2f3640; padding: 6px 10px; border-radius: 6px; font-size: 0.85rem; display: flex; justify-content: space-between; }
+    .hint { font-size: 0.82rem; color: #dcdde1; line-height: 1.4; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>MENU</h1>
-    </header>
 
-    <!-- PRZYSTAWKI RYBNE -->
-    <section>
-      <h2>Przystawki z ryb i owoców morza (Antipasti di Pesce)</h2>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Półmisek przystawek rybnych <span class="item-orig">(Antipasto Misto di Pesce)</span></div>
-          <div class="item-desc">Degustacja naszych przystawek rybnych, polecana dla 2 osób.</div>
-        </div>
-        <div class="item-price">35.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Surowe owoce morza <span class="item-orig">(Crudi di Mare)</span></div>
-          <div class="item-desc">Wybór najwyższej jakości surowych langustynek (2 szt.) oraz czerwonych krewetek z Mazara del Vallo (2 szt.).</div>
-        </div>
-        <div class="item-price">30.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Morskie Caprese <span class="item-orig">(Caprese di Mare)</span></div>
-          <div class="item-desc">Burrata z pomidorami, bottargą z tuńczyka i limonką.</div>
-        </div>
-        <div class="item-price">12.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Morska Bruschetta <span class="item-orig">(Bruschettone di Mare)</span></div>
-          <div class="item-desc">Duża grzanka zbożowa z filetami z sardeli (anchois), suszonymi pomidorami, bazylią i burratą.</div>
-        </div>
-        <div class="item-price">13.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Sałatka z ośmiornicy <span class="item-orig">(Insalata di Polpo)</span></div>
-          <div class="item-desc">Sałatka z ośmiornicy z mieszanką warzyw, doprawiona sycylijskimi cytrusami.</div>
-        </div>
-        <div class="item-price">12.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Grillowana ośmiornica <span class="item-orig">(Polpo Grigliato)</span></div>
-          <div class="item-desc">Grillowana ośmiornica na poduszce z hummusu z ciecierzycy i majonezem kaparowym.</div>
-        </div>
-        <div class="item-price">12.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Sardynki „Allinguate” <span class="item-orig">(Sarde Allinguate)</span></div>
-          <div class="item-desc">Tradycyjne sardynki marynowane w occie, panierowane i smażone.</div>
-        </div>
-        <div class="item-price">12.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Marynowana seriola <span class="item-orig">(Ricciola Marinata)</span></div>
-          <div class="item-desc">Śródziemnomorska seriola krojona nożem, marynowana z różowym pieprzem, rozmarynem, skórką z cytrusów i sosem mango.</div>
-        </div>
-        <div class="item-price">15.0 EUR</div>
-      </div>
-    </section>
-
-    <!-- PRZYSTAWKI LĄDOWE -->
-    <section>
-      <h2>Przystawki lądowe (Antipasti di Terra)</h2>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Półmisek przystawek lądowych (dla 2 osób) <span class="item-orig">(Misto di Terra)</span></div>
-          <div class="item-desc">Zestaw serów sycylijskich podawanych z konfiturami i miodem, przyprawiane zielone oliwki, burrata oraz suszone pomidory.</div>
-        </div>
-        <div class="item-price">20.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Klasyczna Bruschetta <span class="item-orig">(Bruschettone di Terra)</span></div>
-          <div class="item-desc">Duża rustykalna grzanka zbożowa z suszonymi pomidorami, burratą i bazylią.</div>
-        </div>
-        <div class="item-price">12.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Caponata z bakłażana <span class="item-orig">(Caponata di Melenzane)</span></div>
-          <div class="item-desc">Tradycyjna sycylijska caponata z bakłażanów.</div>
-        </div>
-        <div class="item-price">10.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Caprese z burratą <span class="item-orig">(Caprese con Burrata)</span></div>
-          <div class="item-desc">Sałatka Caprese ze świeżą mozzarellą burrata.</div>
-        </div>
-        <div class="item-price">12.0 EUR</div>
-      </div>
-    </section>
-
-    <!-- PIERWSZE DANIA Z RYB -->
-    <section>
-      <h2>Pierwsze dania z ryb i owoców morza (Primi di Pesce)</h2>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Busiate z duszonym sosem z ośmiornicy <span class="item-orig">(Busiate al Polpo Strozzato)</span></div>
-          <div class="item-desc">Makaron busiate w lekko pikantnym sosie z duszonej ośmiornicy.</div>
-        </div>
-        <div class="item-price">19.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Busiate z krewetkami i pistacjami <span class="item-orig">(Busiate Gamberi e Pistacchio)</span></div>
-          <div class="item-desc">Makaron busiate z czerwonymi krewetkami z Mazary duszonymi w brandy, z kremem pistacjowym i bazylią.</div>
-        </div>
-        <div class="item-price">20.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Kuskus po trapańsku <span class="item-orig">(Cous Cous alla Trapanese)</span></div>
-          <div class="item-desc">Kuskus gotowany na parze z wywarem rybnym według dawnej tradycji z Trapani.</div>
-        </div>
-        <div class="item-price">20.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Linguine z bottargą i czerwoną krewetką <span class="item-orig">(Linguine Bottarga e Rosso)</span></div>
-          <div class="item-desc">Makaron linguine z bottargą z tuńczyka, tatarem z czerwonych krewetek z Mazary, papryczką chili i czosnkiem o aromacie cytryny.</div>
-        </div>
-        <div class="item-price">22.0 EUR</div>
-      </div>
-    </section>
-
-    <!-- PIERWSZE DANIA LĄDOWE -->
-    <section>
-      <h2>Pierwsze dania lądowe (Primi di Terra)</h2>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Busiate alla Norma <span class="item-orig">(Busiate alla Norma)</span></div>
-          <div class="item-desc">Makaron busiate z sosem pomidorowym, smażonym bakłażanem i słoną ricottą.</div>
-        </div>
-        <div class="item-price">16.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Busiate z pesto po trapańsku <span class="item-orig">(Busiate al Pesto Trapanese)</span></div>
-          <div class="item-desc">Makaron busiate z tradycyjnym pesto trapańskim, prażoną bułką tartą i smażonym bakłażanem.</div>
-        </div>
-        <div class="item-price">18.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Busiate z ragù z sycylijskiego prosiaka <span class="item-orig">(Busiate con Ragù di Maialino Siciliano)</span></div>
-          <div class="item-desc">Makaron busiate z mięsnym sosem ragù z sycylijskiej wieprzowiny.</div>
-        </div>
-        <div class="item-price">20.0 EUR</div>
-      </div>
-    </section>
-
-    <!-- DANIA GŁÓWNE Z RYB -->
-    <section>
-      <h2>Dania główne z ryb i owoców morza (Secondi di Mare)</h2>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Mieszanka smażonych owoców morza <span class="item-orig">(Frittura Mista)</span></div>
-          <div class="item-desc">Smażone kalmary, sardynki i ośmiornica.</div>
-        </div>
-        <div class="item-price">24.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Smażone kalmary <span class="item-orig">(Frittura di Calamari)</span></div>
-          <div class="item-desc">Smażone krążki kalmarów.</div>
-        </div>
-        <div class="item-price">20.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Grillowany kalmar <span class="item-orig">(Calamaro alla Griglia)</span></div>
-          <div class="item-desc">Kalmar z grilla.</div>
-        </div>
-        <div class="item-price">18.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Mieszanka ryb i owoców morza z grilla <span class="item-orig">(Grigliata Mista di Pesce)</span></div>
-          <div class="item-desc">Grillowany miecznik, duże krewetki, langustynki i kalmar – polecane dla 2 osób.</div>
-        </div>
-        <div class="item-price">60.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Grillowany miecznik <span class="item-orig">(Pesce Spada alla Griglia)</span></div>
-          <div class="item-desc">Stek z miecznika z grilla.</div>
-        </div>
-        <div class="item-price">22.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Grillowane krewetki z Mazary <span class="item-orig">(Gamberoni di Mazara alla Griglia)</span></div>
-          <div class="item-desc">Duże krewetki z Mazara del Vallo z grilla.</div>
-        </div>
-        <div class="item-price">30.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Granik „alla Matalotta” <span class="item-orig">(Cernia alla Matalotta)</span></div>
-          <div class="item-desc">Granik duszony w sosie z pomidorkami koktajlowymi.</div>
-        </div>
-        <div class="item-price">24.0 EUR</div>
-      </div>
-    </section>
-
-    <!-- DANIA GŁÓWNE MIĘSNE -->
-    <section>
-      <h2>Dania główne mięsne (Secondi di Terra)</h2>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Kotlet cielęcy po palermsku <span class="item-orig">(Cotoletta alla Palermitana)</span></div>
-          <div class="item-desc">Panierowany kotlet cielęcy w stylu palermskim z frytkami.</div>
-        </div>
-        <div class="item-price">16.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Grillowany filet wołowy <span class="item-orig">(Filetto di Manzo alla Griglia)</span></div>
-          <div class="item-desc">Grillowana polędwica wołowa z ziemniakami podsmażanymi na maśle i świeżymi ziołami aromatycznymi.</div>
-        </div>
-        <div class="item-price">24.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Sycylijska wołowina wolno gotowana <span class="item-orig">(Reale di Manzo Siciliano)</span></div>
-          <div class="item-desc">Sycylijska wołowina gotowana w niskiej temperaturze, podawana z redukcją z wina Marsala i purée ziemniaczanym.</div>
-        </div>
-        <div class="item-price">20.0 EUR</div>
-      </div>
-    </section>
-
-    <!-- DODATKI -->
-    <section>
-      <h2>Dodatki (Contorni)</h2>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Sałatka z kopru włoskiego i pomarańczy <span class="item-orig">(Insalata di Finocchi e Arance)</span></div>
-        </div>
-        <div class="item-price">5.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Sałatka mieszana <span class="item-orig">(Insalata Mista)</span></div>
-          <div class="item-desc">Sałatka z mieszanki warzyw: sałata, świeże pomidorki koktajlowe, marchewka i cykoria radicchio.</div>
-        </div>
-        <div class="item-price">5.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Sałatka sycylijska <span class="item-orig">(Insalata Siciliana)</span></div>
-          <div class="item-desc">Tradycyjna sałatka ze świeżymi pomidorkami koktajlowymi, kaparami, oliwkami, cebulą i oregano.</div>
-        </div>
-        <div class="item-price">5.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Zielona sałata <span class="item-orig">(Insalata Verde)</span></div>
-          <div class="item-desc">Sałatka ze świeżej sałaty.</div>
-        </div>
-        <div class="item-price">5.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Frytki <span class="item-orig">(Patatine Fritte)</span></div>
-        </div>
-        <div class="item-price">5.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Ziemniaki podsmażane na maśle <span class="item-orig">(Patate Saltate al Burro)</span></div>
-          <div class="item-desc">Ziemniaki gotowane na parze w niskiej temperaturze z ziołami aromatycznymi i podsmażane na maśle.</div>
-        </div>
-        <div class="item-price">5.0 EUR</div>
-      </div>
-    </section>
-
-    <!-- DESERY -->
-    <section>
-      <h2>Desery (Dessert)</h2>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Sycylijskie Cannolo – 1 szt. <span class="item-orig">(Cannolo Siciliano - 1pz)</span></div>
-        </div>
-        <div class="item-price">5.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Tiramisù – Domowe <span class="item-orig">(Tiramisú - Homemade)</span></div>
-        </div>
-        <div class="item-price">5.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Cassata Sycylijska – Domowa <span class="item-orig">(Cassata Siciliana - Homemade)</span></div>
-        </div>
-        <div class="item-price">7.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Sernik <span class="item-orig">(Cheesecake)</span></div>
-          <div class="item-desc">Czekolada – Owoce leśne – Pistacja</div>
-        </div>
-        <div class="item-price">5.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Sycylijskie Cannolo bezglutenowe <span class="item-orig">(Cannolo Siciliano Gluten Free)</span></div>
-        </div>
-        <div class="item-price">5.5 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Sgroppino <span class="item-orig">(Sorbet cytrynowy z wódką i prosecco)</span></div>
-        </div>
-        <div class="item-price">5.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Sorbet cytrynowy <span class="item-orig">(Sorbetto al Limone)</span></div>
-        </div>
-        <div class="item-price">4.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Rum Zacapa 23 z płatkami czekolady <span class="item-orig">(Rum Zacapa 23 e Scaglie di Cioccolato)</span></div>
-        </div>
-        <div class="item-price">12.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Parfait migdałowe – Domowe <span class="item-orig">(Parfait di Mandorle - Homemade)</span></div>
-        </div>
-        <div class="item-price">5.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Sernik z czerwonymi owocami (bez glutenu, bez laktozy) <span class="item-orig">(Cheesecake Frutti Rossi)</span></div>
-        </div>
-        <div class="item-price">6.0 EUR</div>
-      </div>
-    </section>
-
-    <!-- NAPOJE -->
-    <section>
-      <h2>Napoje i Kawy (Bibite)</h2>
-
-      <div class="menu-item">
-        <div class="item-info"><div class="item-title">Woda niegazowana <span class="item-orig">(Acqua Naturale)</span></div></div>
-        <div class="item-price">2.5 EUR</div>
-      </div>
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Piwo Birra dello Stretto <span class="item-orig">(Birra dello Stretto)</span></div>
-          <div class="item-desc">33 cl – lager</div>
-        </div>
-        <div class="item-price">5.0 EUR</div>
-      </div>
-      <div class="menu-item">
-        <div class="item-info"><div class="item-title">Kawa Americano <span class="item-orig">(Caffè Americano)</span></div></div>
-        <div class="item-price">2.0 EUR</div>
-      </div>
-      <div class="menu-item">
-        <div class="item-info"><div class="item-title">Woda gazowana <span class="item-orig">(Acqua Frizzante)</span></div></div>
-        <div class="item-price">2.5 EUR</div>
-      </div>
-      <div class="menu-item">
-        <div class="item-info"><div class="item-title">Piwo bezalkoholowe Nastro <span class="item-orig">(Birra Analcolica Nastro)</span></div></div>
-        <div class="item-price">5.0 EUR</div>
-      </div>
-      <div class="menu-item">
-        <div class="item-info"><div class="item-title">Kawa Espresso <span class="item-orig">(Caffè Espresso)</span></div></div>
-        <div class="item-price">1.2 EUR</div>
-      </div>
-      <div class="menu-item">
-        <div class="item-info"><div class="item-title">Kieliszek wina <span class="item-orig">(Calice di Vino)</span></div></div>
-        <div class="item-price">6.0 EUR</div>
-      </div>
-      <div class="menu-item">
-        <div class="item-info"><div class="item-title">Coca-Cola 33 cl</div></div>
-        <div class="item-price">3.0 EUR</div>
-      </div>
-      <div class="menu-item">
-        <div class="item-info"><div class="item-title">Fanta 33 cl</div></div>
-        <div class="item-price">3.0 EUR</div>
-      </div>
-      <div class="menu-item">
-        <div class="item-info"><div class="item-title">Kieliszek Prosecco <span class="item-orig">(Calice di Prosecco)</span></div></div>
-        <div class="item-price">6.0 EUR</div>
-      </div>
-      <div class="menu-item">
-        <div class="item-info"><div class="item-title">Schweppes Lemon</div></div>
-        <div class="item-price">2.5 EUR</div>
-      </div>
-      <div class="menu-item">
-        <div class="item-info"><div class="item-title">Schweppes Tonic</div></div>
-        <div class="item-price">2.5 EUR</div>
-      </div>
-      <div class="menu-item">
-        <div class="item-info"><div class="item-title">Sprite 33 cl</div></div>
-        <div class="item-price">3.0 EUR</div>
-      </div>
-      <div class="menu-item">
-        <div class="item-info"><div class="item-title">Woda mineralna Ferrarelle</div></div>
-        <div class="item-price">3.0 EUR</div>
-      </div>
-      <div class="menu-item">
-        <div class="item-info"><div class="item-title">Crodino (aperitif bezalkoholowy)</div></div>
-        <div class="item-price">3.0 EUR</div>
-      </div>
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">San Bitter bezalkoholowy <span class="item-orig">(San Bitter Analcolico)</span></div>
-          <div class="item-desc">Biały (Bianco)</div>
-        </div>
-        <div class="item-price">3.0 EUR</div>
-      </div>
-      <div class="menu-item">
-        <div class="item-info"><div class="item-title">Butelka Prosecco <span class="item-orig">(Bottiglia Prosecco)</span></div></div>
-        <div class="item-price">18.0 EUR</div>
-      </div>
-      <div class="menu-item">
-        <div class="item-info"><div class="item-title">Herbata brzoskwiniowa <span class="item-orig">(Tè alla Pesca)</span></div></div>
-        <div class="item-price">3.0 EUR</div>
-      </div>
-      <div class="menu-item">
-        <div class="item-info"><div class="item-title">Herbata cytrynowa <span class="item-orig">(Tè al Limone)</span></div></div>
-        <div class="item-price">3.0 EUR</div>
-      </div>
-      <div class="menu-item">
-        <div class="item-info"><div class="item-title">Podwójne Espresso <span class="item-orig">(Caffè Doppio)</span></div></div>
-        <div class="item-price">2.4 EUR</div>
-      </div>
-      <div class="menu-item">
-        <div class="item-info"><div class="item-title">Caffè Corretto (espresso z kroplą alkoholu)</div></div>
-        <div class="item-price">2.0 EUR</div>
-      </div>
-      <div class="menu-item">
-        <div class="item-info"><div class="item-title">Kawa jęczmienna duża <span class="item-orig">(Caffè Orzo Grande)</span></div></div>
-        <div class="item-price">2.0 EUR</div>
-      </div>
-      <div class="menu-item">
-        <div class="item-info"><div class="item-title">Kawa z żeń-szeniem duża <span class="item-orig">(Ginseng Grande)</span></div></div>
-        <div class="item-price">2.0 EUR</div>
-      </div>
-      <div class="menu-item">
-        <div class="item-info"><div class="item-title">Sok owocowy <span class="item-orig">(Succo di Frutta)</span></div></div>
-        <div class="item-price">2.5 EUR</div>
-      </div>
-      <div class="menu-item">
-        <div class="item-info"><div class="item-title">Kawa jęczmienna mała <span class="item-orig">(Caffè Orzo Piccolo)</span></div></div>
-        <div class="item-price">1.5 EUR</div>
-      </div>
-      <div class="menu-item">
-        <div class="item-info"><div class="item-title">Napar ziołowy do wyboru <span class="item-orig">(Tisana a scelta)</span></div></div>
-        <div class="item-price">3.0 EUR</div>
-      </div>
-      <div class="menu-item">
-        <div class="item-info"><div class="item-title">Kawa z żeń-szeniem mała <span class="item-orig">(Ginseng Piccolo)</span></div></div>
-        <div class="item-price">1.5 EUR</div>
-      </div>
-    </section>
-
-    <!-- SZAMPANY I WINA MUSUJĄCE -->
-    <section>
-      <h2>Szampany i Wina Musujące (Champagne &amp; Bollicine)</h2>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">FRANCIACORTA 'Muratori' SIMBIOTICO (bio – zero siarczynów)</div>
-        </div>
-        <div class="item-price">48.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">FRANCIACORTA 'Faccoli' BRUT (Chardonnay 60%, Pinot Bianco 20%, Pinot Noir 20%)</div>
-          <div class="item-desc">Rzemieślnicza Franciacorta, orzeźwiająca i bardzo pijalna, kryjąca za pozorną bezpośredniością wielką głębię: delikatna słodycz w ustach opiera się na świeżych cytrusach, z finiszem o pięknym napięciu.</div>
-        </div>
-        <div class="item-price">55.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">FRANCIACORTA 'Muratori' ROSÈ EXTRA BRUT</div>
-        </div>
-        <div class="item-price">40.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">CHAMPAGNE BLANC DE BLANCS 'Alain Couvreur' (100% Chardonnay)</div>
-          <div class="item-desc">Szlachetny, subtelny i wyrafinowany szampan z nutami owocowymi. Niezrównana świeżość, nie boi się wymagających dań.</div>
-        </div>
-        <div class="item-price">68.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">SPUMANTE PROSECCO DOC BRUT 'Pizzolato' (organiczne)</div>
-        </div>
-        <div class="item-price">22.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">CHAMPAGNE BLANC DE NOIR 'Alain Couvreur' (Pinot Noir 97%, Pinot Meunier 3%)</div>
-          <div class="item-desc">Owocowy i wyrazisty szampan, zaskakujący długością finiszu na podniebieniu.</div>
-        </div>
-        <div class="item-price">66.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">FRANCIACORTA 'Muratori' BLANC DE NOIRS</div>
-        </div>
-        <div class="item-price">42.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">CHAMPAGNE FLEURY (Extra Brut) Pinot Noir 100%</div>
-          <div class="item-desc">Doskonały do wyrazistych aperitifów, pierwszych dań i białych ryb. Dojrzały, soczysty, pełen smaku i winny.</div>
-        </div>
-        <div class="item-price">82.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">CHAMPAGNE O.BELIN (100% Pinot Meunier)</div>
-          <div class="item-desc">Dobra dojrzałość, żółte brzoskwinie, suszone morele, nuty waniliowe. W ustach owoce łączą się z nutami karmelu i opiekanego chleba.</div>
-        </div>
-        <div class="item-price">75.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">CHAMPAGNE TARLANT Rosé Brut (42% Pinot Noir, 37% Chardonnay, 21% Meunier)</div>
-          <div class="item-desc">Zaproszenie do delektowania się najbardziej eksplozywnym, owocowym i korzennym rosé. Elegancja, brak cukru i bogactwo emocji, które wywołuje.</div>
-        </div>
-        <div class="item-price">120.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">FRANCIACORTA 'Faccoli' ROSÈ BRUT (70% Pinot Noir, 20% Chardonnay, 10% Pinot Bianco)</div>
-          <div class="item-desc">Radosne i pasjonujące wino, które z uporem eksponuje mineralny charakter tych winnic.</div>
-        </div>
-        <div class="item-price">58.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">SPUMANTE PROSECCO DOC BRUT ROSÈ 'Pizzolato' (organiczne)</div>
-        </div>
-        <div class="item-price">24.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">SPUMANTE BIANCO EXTRA DRY 'CA Perla'</div>
-        </div>
-        <div class="item-price">19.0 EUR</div>
-      </div>
-    </section>
-
-    <!-- CANTINA PLANETA -->
-    <section>
-      <h2>Winnica Planeta (Menfi – Etna – Noto)</h2>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">SANTA CECILIA '2021</div>
-          <div class="item-desc">100% Nero d'Avola</div>
-        </div>
-        <div class="item-price">59.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">SITO DELL'ULMO</div>
-        </div>
-        <div class="item-price">30.0 EUR</div>
-      </div>
-    </section>
-
-    <!-- CANTINA DONNAFUGATA -->
-    <section>
-      <h2>Winnica Donnafugata (Marsala)</h2>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">ANTHILIA</div>
-          <div class="item-desc">Lucido, Catarratto</div>
-        </div>
-        <div class="item-price">22.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">LA FUGA</div>
-          <div class="item-desc">Chardonnay</div>
-        </div>
-        <div class="item-price">27.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">SEDARA</div>
-          <div class="item-desc">Nero d'Avola z przewagą w kupażu z innymi szczepami</div>
-        </div>
-        <div class="item-price">22.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">SHERAZADE</div>
-          <div class="item-desc">Nero d'Avola</div>
-        </div>
-        <div class="item-price">24.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">SUL VULCANO ETNA BIANCO DOC</div>
-          <div class="item-desc">Carricante</div>
-        </div>
-        <div class="item-price">34.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">SUL VULCANO ETNA ROSSO DOC</div>
-          <div class="item-desc">Nerello Mascalese</div>
-        </div>
-        <div class="item-price">34.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">SUR SUR</div>
-          <div class="item-desc">Grillo</div>
-        </div>
-        <div class="item-price">24.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">VIGNA DI GABRI</div>
-          <div class="item-desc">Lucido DOC, Blanc, Viognier, Chardonnay, Sauvignon</div>
-        </div>
-        <div class="item-price">28.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">FLORAMUNDI</div>
-          <div class="item-desc">Cerasuolo di Vittoria DOCG</div>
-        </div>
-        <div class="item-price">24.0 EUR</div>
-      </div>
-    </section>
-
-    <!-- CANTINA FAZIO -->
-    <section>
-      <h2>Winnica Fazio (Trapani – Erice)</h2>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">AEGADES</div>
-          <div class="item-desc">Grillo</div>
-        </div>
-        <div class="item-price">24.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">CALEBIANCHE</div>
-          <div class="item-desc">Catarratto</div>
-        </div>
-        <div class="item-price">24.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">GRILLI DI MARE</div>
-          <div class="item-desc">Białe wino lekko musujące (frizzante)</div>
-        </div>
-        <div class="item-price">24.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">MONT'ELIMO</div>
-          <div class="item-desc">Catarratto</div>
-        </div>
-        <div class="item-price">22.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">MONT'ELIMO</div>
-          <div class="item-desc">Grillo</div>
-        </div>
-        <div class="item-price">22.0 EUR</div>
-      </div>
-    </section>
-
-    <!-- CANTINA FINA -->
-    <section>
-      <h2>Winnica Fina (Marsala)</h2>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">HANAMI</div>
-          <div class="item-desc">Różowe wino organiczne</div>
-        </div>
-        <div class="item-price">24.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">KEBRILLA</div>
-          <div class="item-desc">Grillo</div>
-        </div>
-        <div class="item-price">22.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">LA STANZA DEL RE</div>
-          <div class="item-desc">Chardonnay</div>
-        </div>
-        <div class="item-price">29.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">MAKISÈ</div>
-          <div class="item-desc">Białe wino lekko musujące (frizzante)</div>
-        </div>
-        <div class="item-price">24.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">NERO D'AVOLA</div>
-        </div>
-        <div class="item-price">22.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">PERRICONE</div>
-        </div>
-        <div class="item-price">25.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">Białe wino musujące <span class="item-orig">(Vino Bianco Frizzante Spumante)</span></div>
-        </div>
-        <div class="item-price">35.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">SYRAH</div>
-          <div class="item-desc">Czerwone wino organiczne</div>
-        </div>
-        <div class="item-price">24.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">TAIF</div>
-          <div class="item-desc">Zibibbo</div>
-        </div>
-        <div class="item-price">24.0 EUR</div>
-      </div>
-    </section>
-
-    <!-- CANTINA FIRRIATO -->
-    <section>
-      <h2>Winnica Firriato (Trapani – Etna)</h2>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">CAELES</div>
-          <div class="item-desc">Grillo D.O.C.</div>
-        </div>
-        <div class="item-price">24.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">CHIARAMONTE</div>
-          <div class="item-desc">Inzolia D.O.C.</div>
-        </div>
-        <div class="item-price">24.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">CHARME CLERÌ ROSATO</div>
-        </div>
-        <div class="item-price">26.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">LE SABBIE DELL'ETNA</div>
-          <div class="item-desc">Nerello Mascalese, Nerello Cappuccio</div>
-        </div>
-        <div class="item-price">29.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">CHARME BIANCO</div>
-          <div class="item-desc">Białe wino lekko musujące (frizzante)</div>
-        </div>
-        <div class="item-price">24.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">GAUDENSIUS BLANC DE BLANC</div>
-          <div class="item-desc">Wino musujące – Carricante</div>
-        </div>
-        <div class="item-price">40.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">CHARME ROSÈ</div>
-          <div class="item-desc">Różowe wino lekko musujące (frizzante)</div>
-        </div>
-        <div class="item-price">24.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">ALTAVILLA DELLA CORTE</div>
-          <div class="item-desc">Cabernet Sauvignon</div>
-        </div>
-        <div class="item-price">25.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">CAELES CATARRATTO</div>
-          <div class="item-desc">Catarratto Bio</div>
-        </div>
-        <div class="item-price">24.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">CHARME CLERÌ BIANCO</div>
-          <div class="item-desc">Chardonnay, Moscato Bianco, Carricante</div>
-        </div>
-        <div class="item-price">26.0 EUR</div>
-      </div>
-    </section>
-
-    <!-- CANTINA FONDO ANTICO -->
-    <section>
-      <h2>Winnica Fondo Antico (Trapani)</h2>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">BELLO MIO</div>
-          <div class="item-desc">Zibibbo</div>
-        </div>
-        <div class="item-price">24.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">GRILLO PARLANTE</div>
-          <div class="item-desc">Grillo D.O.C.</div>
-        </div>
-        <div class="item-price">24.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">NENÈ</div>
-          <div class="item-desc">Nero d'Avola</div>
-        </div>
-        <div class="item-price">27.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">SOLE</div>
-          <div class="item-desc">Inzolia</div>
-        </div>
-        <div class="item-price">24.0 EUR</div>
-      </div>
-    </section>
-
-    <!-- CANTINA MURUASICCO -->
-    <section>
-      <h2>Winnica Muruasicco (Etna)</h2>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">ETNA DOC ROSATO</div>
-          <div class="item-desc">90% Nerello Mascalese, 10% Nerello Cappuccio</div>
-        </div>
-        <div class="item-price">35.0 EUR</div>
-      </div>
-
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">ETNA DOC ROSSO</div>
-          <div class="item-desc">90% Nerello Mascalese, 10% Nerello Cappuccio</div>
-        </div>
-        <div class="item-price">35.0 EUR</div>
-      </div>
-    </section>
-
-    <!-- KOKTAJLE -->
-    <section>
-      <h2>Koktajle (Cocktails)</h2>
-
-      <div class="menu-item"><div class="item-info"><div class="item-title">AMERICANO</div></div><div class="item-price">8.0 EUR</div></div>
-      <div class="menu-item"><div class="item-info"><div class="item-title">APEROL SPRITZ</div></div><div class="item-price">8.0 EUR</div></div>
-      <div class="menu-item"><div class="item-info"><div class="item-title">CAMPARI SPRITZ</div></div><div class="item-price">8.0 EUR</div></div>
-      <div class="menu-item"><div class="item-info"><div class="item-title">NEGRONI</div></div><div class="item-price">8.0 EUR</div></div>
-      <div class="menu-item"><div class="item-info"><div class="item-title">NEGRONI SBAGLIATO</div></div><div class="item-price">8.0 EUR</div></div>
-      <div class="menu-item"><div class="item-info"><div class="item-title">NEGROSKY</div></div><div class="item-price">8.0 EUR</div></div>
-      <div class="menu-item"><div class="item-info"><div class="item-title">VODKA LEMON</div></div><div class="item-price">8.0 EUR</div></div>
-      <div class="menu-item"><div class="item-info"><div class="item-title">VODKA TONIC</div></div><div class="item-price">8.0 EUR</div></div>
-      <div class="menu-item"><div class="item-info"><div class="item-title">LIMONCELLO SPRITZ</div></div><div class="item-price">10.0 EUR</div></div>
-    </section>
-
-    <!-- DESTYLATY I LIKIERY -->
-    <section>
-      <h2>Destylaty i Likiery (Distillati e Liquori)</h2>
-
-      <div class="menu-item"><div class="item-info"><div class="item-title">AMARO AVERNA</div></div><div class="item-price">4.0 EUR</div></div>
-      <div class="menu-item"><div class="item-info"><div class="item-title">AMARO CYNAR</div></div><div class="item-price">4.0 EUR</div></div>
-      <div class="menu-item"><div class="item-info"><div class="item-title">AMARO JÄGERMEISTER</div></div><div class="item-price">4.0 EUR</div></div>
-      <div class="menu-item"><div class="item-info"><div class="item-title">AMARO MONTE POLIZO</div></div><div class="item-price">4.0 EUR</div></div>
-      <div class="menu-item"><div class="item-info"><div class="item-title">BALLANTINE'S</div></div><div class="item-price">8.0 EUR</div></div>
-      <div class="menu-item"><div class="item-info"><div class="item-title">GRAPPA BARRICATA (starzona w beczce)</div></div><div class="item-price">4.0 EUR</div></div>
-      <div class="menu-item"><div class="item-info"><div class="item-title">GRAPPA BIANCA (biała)</div></div><div class="item-price">4.0 EUR</div></div>
-      <div class="menu-item"><div class="item-info"><div class="item-title">LAGAVULIN</div></div><div class="item-price">8.0 EUR</div></div>
-      <div class="menu-item"><div class="item-info"><div class="item-title">LIMONCELLO</div></div><div class="item-price">4.0 EUR</div></div>
-      <div class="menu-item"><div class="item-info"><div class="item-title">Likier laurowy <span class="item-orig">(Liquore all'Alloro)</span></div></div><div class="item-price">4.0 EUR</div></div>
-      <div class="menu-item"><div class="item-info"><div class="item-title">MARSALA</div></div><div class="item-price">5.0 EUR</div></div>
-      <div class="menu-item"><div class="item-info"><div class="item-title">OBAN 14</div></div><div class="item-price">8.0 EUR</div></div>
-      <div class="menu-item"><div class="item-info"><div class="item-title">PASSITO</div></div><div class="item-price">5.0 EUR</div></div>
-      <div class="menu-item"><div class="item-info"><div class="item-title">RED LABEL</div></div><div class="item-price">8.0 EUR</div></div>
-      <div class="menu-item"><div class="item-info"><div class="item-title">RUM ZACAPA 23</div></div><div class="item-price">8.0 EUR</div></div>
-      <div class="menu-item"><div class="item-info"><div class="item-title">SAMBUCA</div></div><div class="item-price">4.0 EUR</div></div>
-      <div class="menu-item">
-        <div class="item-info">
-          <div class="item-title">VECCHIO AMARO DEL CAPO</div>
-          <div class="item-desc">Klasyczne lub z papryczką chili (Normale o al peperoncino)</div>
-        </div>
-        <div class="item-price">4.0 EUR</div>
-      </div>
-      <div class="menu-item"><div class="item-info"><div class="item-title">ZIBIBBO</div></div><div class="item-price">5.0 EUR</div></div>
-      <div class="menu-item"><div class="item-info"><div class="item-title">AMARO FERNET BRANCA</div></div><div class="item-price">4.0 EUR</div></div>
-    </section>
-
-    <!-- KARTA GINÓW -->
-    <section>
-      <h2>Karta Ginów (Gin List)</h2>
-
-      <div class="menu-item"><div class="item-info"><div class="item-title">BOMBAY</div></div><div class="item-price">8.0 EUR</div></div>
-      <div class="menu-item"><div class="item-info"><div class="item-title">BROCKMANS</div></div><div class="item-price">8.0 EUR</div></div>
-      <div class="menu-item"><div class="item-info"><div class="item-title">ETNA</div></div><div class="item-price">9.0 EUR</div></div>
-      <div class="menu-item"><div class="item-info"><div class="item-title">G'VINE</div></div><div class="item-price">8.0 EUR</div></div>
-      <div class="menu-item"><div class="item-info"><div class="item-title">HENDRICK'S</div></div><div class="item-price">10.0 EUR</div></div>
-      <div class="menu-item"><div class="item-info"><div class="item-title">MARE</div></div><div class="item-price">10.0 EUR</div></div>
-      <div class="menu-item"><div class="item-info"><div class="item-title">MONKEY 47</div></div><div class="item-price">12.0 EUR</div></div>
-      <div class="menu-item"><div class="item-info"><div class="item-title">NUMBER 3</div></div><div class="item-price">10.0 EUR</div></div>
-      <div class="menu-item"><div class="item-info"><div class="item-title">SALE</div></div><div class="item-price">8.0 EUR</div></div>
-      <div class="menu-item"><div class="item-info"><div class="item-title">TANQUERAY</div></div><div class="item-price">8.0 EUR</div></div>
-    </section>
-
-    <!-- ALERGENY -->
-    <section>
-      <h2>Alergeny (Allergens)</h2>
-      <ul class="allergens-list">
-        <li>Gluten</li>
-        <li>Skorupiaki</li>
-        <li>Jaja</li>
-        <li>Orzeszki ziemne</li>
-        <li>Ryby</li>
-        <li>Soja</li>
-        <li>Mleko</li>
-        <li>Orzechy</li>
-        <li>Seler</li>
-        <li>Gorczyca</li>
-        <li>Nasiona sezamu</li>
-        <li>Dwutlenek siarki i siarczyny</li>
-        <li>Łubin</li>
-        <li>Mięczaki</li>
-      </ul>
-    </section>
+  <!-- GÓRNY PASEK -->
+  <div id="hud">
+    <div class="hud-group">
+      <div class="stat-box money">💰 <span id="ui-money">250</span> $</div>
+      <div class="stat-box clock">🕒 <span id="ui-time">09:30</span> <span id="ui-shift" class="status-badge">Odpoczynek (Praca od 11:00)</span></div>
+    </div>
+    <div class="hud-group">
+      <button id="btn-build-hut" class="btn-build">🏠 Zbuduj Chatę (150 $)</button>
+      <button id="btn-boost" class="btn-boost">⚡ BOOST (Gotowy)</button>
+      <button id="btn-shop">🛒 Sklep Ulepszeń</button>
+    </div>
   </div>
+
+  <!-- OBSZAR GRY + PANEL -->
+  <div id="main-area">
+    <canvas id="gameCanvas"></canvas>
+
+    <div id="sidebar">
+      <div class="panel-card">
+        <h3>ℹ️ Instrukcja</h3>
+        <p class="hint">
+          • O godzinie <b>11:00</b> rolnicy wychodzą z chat na pole.<br>
+          • Kliknij <b>Chatę</b> na mapie, aby zatrudnić lub ulepszyć pracowników.<br>
+          • Kliknij <b>Zbuduj Chatę</b>, a następnie wskaż wolne miejsce na trawie.
+        </p>
+      </div>
+
+      <!-- DYNAMICZNY INTERFEJS CHATY LUB SKLEPU -->
+      <div id="dynamic-panel"></div>
+    </div>
+  </div>
+
+<script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+// --- KONFIGURACJA ŚWIATA I SIATKI PATHFINDINGU ---
+const TILE_SIZE = 32;
+let COLS = 30;
+let ROWS = 22;
+
+const state = {
+  money: 250,
+  gameMinutes: 9 * 60 + 30, // Start o 09:30
+  timeSpeed: 2.2, // Ile minut gry mija na sekundę rzeczywistą
+  buildMode: false,
+  selectedHutId: null,
+  activeTab: 'hut', // 'hut' lub 'shop'
+  boost: {
+    active: false,
+    timer: 0,
+    cooldownTimer: 0,
+    duration: 8,        // sekundy działania
+    cooldown: 20,       // sekundy odnowienia
+    multiplier: 1.8,    // mnożnik prędkości
+    lvlDuration: 1,
+    lvlPower: 1,
+    lvlCooldown: 1
+  }
+};
+
+// Typy pracowników odblokowywane przez poziom chaty
+const WORKER_TIERS = [
+  { tier: 1, name: "Uczeń", cost: 50, speed: 75, capacity: 1, valueMult: 1.0, color: "#3498db" },
+  { tier: 2, name: "Rolnik", cost: 140, speed: 105, capacity: 2, valueMult: 1.5, color: "#e67e22" },
+  { tier: 3, name: "Mistrz Zbiorów", cost: 320, speed: 145, capacity: 4, valueMult: 2.2, color: "#9b59b6" }
+];
+
+const depot = { gx: 3, gy: 10, gw: 3, gh: 3 }; // Punkt skupu
+const fieldArea = { gx: 13, gy: 2, gw: 15, gh: 18 }; // Obszar pola bawełny
+
+let huts = [];
+let cottonPlants = [];
+let workers = [];
+let floatingTexts = [];
+let walkGrid = []; // 0 = wolne, 1 = przeszkoda
+
+// --- INICJALIZACJA MAPY ---
+function resizeCanvas() {
+  canvas.width = canvas.parentElement.clientWidth - 340;
+  canvas.height = canvas.parentElement.clientHeight;
+  COLS = Math.floor(canvas.width / TILE_SIZE);
+  ROWS = Math.floor(canvas.height / TILE_SIZE);
+  fieldArea.gw = Math.max(8, COLS - 15);
+  fieldArea.gh = Math.max(8, ROWS - 4);
+  rebuildWalkGrid();
+}
+window.addEventListener('resize', resizeCanvas);
+
+function rebuildWalkGrid() {
+  walkGrid = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
+  // Oznacz skup jako przeszkodę
+  for (let y = depot.gy; y < depot.gy + depot.gh; y++) {
+    for (let x = depot.gx; x < depot.gx + depot.gw; x++) {
+      if (walkGrid[y] && walkGrid[y][x] !== undefined) walkGrid[y][x] = 1;
+    }
+  }
+  // Oznacz chaty jako przeszkody
+  huts.forEach(h => {
+    for (let y = h.gy; y < h.gy + 2; y++) {
+      for (let x = h.gx; x < h.gx + 2; x++) {
+        if (walkGrid[y] && walkGrid[y][x] !== undefined) walkGrid[y][x] = 1;
+      }
+    }
+  });
+}
+
+// Generowanie obfitego pola bawełny z losowym przesunięciem
+function generateCottonField() {
+  cottonPlants = [];
+  for (let gy = fieldArea.gy; gy < fieldArea.gy + fieldArea.gh; gy++) {
+    for (let gx = fieldArea.gx; gx < fieldArea.gx + fieldArea.gw; gx++) {
+      if (Math.random() < 0.78) { // Gęste obsadzenie
+        cottonPlants.push({
+          id: Math.random(),
+          gx, gy,
+          x: gx * TILE_SIZE + TILE_SIZE / 2 + (Math.random() * 14 - 7),
+          y: gy * TILE_SIZE + TILE_SIZE / 2 + (Math.random() * 14 - 7),
+          grown: true,
+          regrowTimer: 0,
+          reservedBy: null
+        });
+      }
+    }
+  }
+}
+
+// --- ALGORYTM A* (PATHFINDING) ---
+function findNearestWalkable(gx, gy) {
+  if (walkGrid[gy] && walkGrid[gy][gx] === 0) return { gx, gy };
+  for (let r = 1; r < 6; r++) {
+    for (let dy = -r; dy <= r; dy++) {
+      for (let dx = -r; dx <= r; dx++) {
+        const nx = gx + dx, ny = gy + dy;
+        if (ny >= 0 && ny < ROWS && nx >= 0 && nx < COLS && walkGrid[ny][nx] === 0) {
+          return { gx: nx, gy: ny };
+        }
+      }
+    }
+  }
+  return { gx: 0, gy: 0 };
+}
+
+function findPathAStar(startX, startY, targetX, targetY) {
+  const start = findNearestWalkable(Math.floor(startX / TILE_SIZE), Math.floor(startY / TILE_SIZE));
+  const goal = findNearestWalkable(Math.floor(targetX / TILE_SIZE), Math.floor(targetY / TILE_SIZE));
+
+  const openSet = [{ x: start.gx, y: start.gy, g: 0, f: 0, parent: null }];
+  const closedSet = new Set();
+
+  while (openSet.length > 0) {
+    openSet.sort((a, b) => a.f - b.f);
+    const current = openSet.shift();
+    const key = `${current.x},${current.y}`;
+
+    if (current.x === goal.gx && current.y === goal.gy) {
+      const path = [];
+      let curr = current;
+      while (curr.parent) {
+        path.unshift({ x: curr.x * TILE_SIZE + TILE_SIZE / 2, y: curr.y * TILE_SIZE + TILE_SIZE / 2 });
+        curr = curr.parent;
+      }
+      return path;
+    }
+
+    closedSet.add(key);
+
+    const neighbors = [
+      { x: current.x + 1, y: current.y }, { x: current.x - 1, y: current.y },
+      { x: current.x, y: current.y + 1 }, { x: current.x, y: current.y - 1 }
+    ];
+
+    for (const n of neighbors) {
+      if (n.x < 0 || n.x >= COLS || n.y < 0 || n.y >= ROWS) continue;
+      if (walkGrid[n.y][n.x] === 1) continue;
+      if (closedSet.has(`${n.x},${n.y}`)) continue;
+
+      const g = current.g + 1;
+      const h = Math.abs(n.x - goal.gx) + Math.abs(n.y - goal.gy);
+      const existing = openSet.find(o => o.x === n.x && o.y === n.y);
+
+      if (!existing) {
+        openSet.push({ x: n.x, y: n.y, g, f: g + h, parent: current });
+      } else if (g < existing.g) {
+        existing.g = g;
+        existing.f = g + h;
+        existing.parent = current;
+      }
+    }
+  }
+  return [];
+}
+
+// --- ZARZĄDZANIE CHATAMI I PRACOWNIKAMI ---
+function createHut(gx, gy) {
+  const id = Date.now() + Math.random();
+  const hut = {
+    id, gx, gy,
+    level: 1,
+    capacity: 2,
+    workers: []
+  };
+  huts.push(hut);
+  rebuildWalkGrid();
+  state.selectedHutId = id;
+  state.activeTab = 'hut';
+  renderSidebar();
+}
+
+function hireWorker(hutId, tierIndex) {
+  const hut = huts.find(h => h.id === hutId);
+  const spec = WORKER_TIERS[tierIndex];
+  if (!hut || hut.workers.length >= hut.capacity || state.money < spec.cost) return;
+
+  state.money -= spec.cost;
+  const worker = {
+    id: Math.random(),
+    hutId: hut.id,
+    tier: spec.tier,
+    name: spec.name,
+    speed: spec.speed,
+    maxCarry: spec.capacity,
+    valueMult: spec.valueMult,
+    color: spec.color,
+    x: (hut.gx + 1) * TILE_SIZE,
+    y: (hut.gy + 2) * TILE_SIZE + 8,
+    insideHut: true,
+state: 'IDLE', // IDLE, TO_COTTON, HARVESTING, TO_DEPOT, TO_HUT
+path: [],
+targetPlant: null,
+carrying: 0,
+actionTimer: 0
+};
+hut.workers.push(worker);
+workers.push(worker);
+renderSidebar();
+}
+function upgradeHutCapacity(hutId) {
+const hut = huts.find(h => h.id === hutId);
+const cost = hut.capacity * 90;
+if (!hut || state.money < cost) return;
+state.money -= cost;
+hut.capacity += 2;
+renderSidebar();
+}
+function upgradeHutLevel(hutId) {
+const hut = huts.find(h => h.id === hutId);
+const cost = hut.level * 220;
+if (!hut || hut.level >= 3 || state.money < cost) return;
+state.money -= cost;
+hut.level += 1;
+renderSidebar();
+}
+// --- LOGIKA AI PRACOWNIKÓW ---
+function isWorkTime() {
+const hour = Math.floor(state.gameMinutes / 60);
+return hour >= 11 && hour < 20; // Praca od 11:00 do 20:00
+}
+function updateWorkers(dt) {
+const working = isWorkTime();
+const boostMult = state.boost.active ? state.boost.multiplier : 1.0;
+workers.forEach(w => {
+const hut = huts.find(h => h.id === w.hutId);
+if (!hut) return;
+// 1. Gdy wybija 11:00 -> wyjdź z chaty
+if (working && w.insideHut) {
+w.insideHut = false;
+w.x = (hut.gx + 1) * TILE_SIZE;
+w.y = (hut.gy + 2) * TILE_SIZE + 10;
+w.state = 'IDLE';
+}
+// 2. Gdy kończy się zmiana -> wróć do chaty
+if (!working && !w.insideHut && w.state !== 'TO_HUT') {
+if (w.targetPlant) { w.targetPlant.reservedBy = null; w.targetPlant = null; }
+w.state = 'TO_HUT';
+w.path = findPathAStar(w.x, w.y, (hut.gx + 1) * TILE_SIZE, (hut.gy + 2) * TILE_SIZE + 10);
+}
+if (w.insideHut) return;
+// 3. Wybór losowej dojrzałej rośliny bawełny
+if (w.state === 'IDLE') {
+if (w.carrying >= w.maxCarry) {
+w.state = 'TO_DEPOT';
+w.path = findPathAStar(w.x, w.y, (depot.gx + 3) * TILE_SIZE + 10, (depot.gy + 1) * TILE_SIZE);
+return;
+}
+const available = cottonPlants.filter(p => p.grown && !p.reservedBy);
+if (available.length > 0) {
+const chosen = available[Math.floor(Math.random() * available.length)];
+chosen.reservedBy = w.id;
+w.targetPlant = chosen;
+w.state = 'TO_COTTON';
+w.path = findPathAStar(w.x, w.y, chosen.x, chosen.y);
+}
+}
+// 4. Poruszanie się po ścieżce A*
+if (w.path.length > 0) {
+const target = w.path[0];
+const dx = target.x - w.x;
+const dy = target.y - w.y;
+const dist = Math.hypot(dx, dy);
+const moveStep = w.speed * boostMult * dt;
+if (dist <= moveStep) {
+w.x = target.x;
+w.y = target.y;
+w.path.shift();
+} else {
+w.x += (dx / dist) * moveStep;
+w.y += (dy / dist) * moveStep;
+}
+} else {
+// Dotarcie do celu
+if (w.state === 'TO_COTTON') {
+w.state = 'HARVESTING';
+w.actionTimer = 0.7 / boostMult;
+} else if (w.state === 'HARVESTING') {
+w.actionTimer -= dt;
+if (w.actionTimer <= 0) {
+if (w.targetPlant) {
+w.targetPlant.grown = false;
+w.targetPlant.regrowTimer = 14;
+w.targetPlant.reservedBy = null;
+w.targetPlant = null;
+}
+w.carrying += 1;
+w.state = 'IDLE';
+}
+} else if (w.state === 'TO_DEPOT') {
+const earned = Math.round(w.carrying * 15 * w.valueMult);
+state.money += earned;
+floatingTexts.push({ x: w.x, y: w.y - 12, text: `+${earned}$`, alpha: 1 });
+w.carrying = 0;
+w.state = 'IDLE';
+} else if (w.state === 'TO_HUT') {
+w.insideHut = true;
+w.carrying = 0;
+}
+}
+});
+}
+// --- AKTUALIZACJA CZASU, ROŚLIN I BOOSTA ---
+function update(dt) {
+// Zegar (24h = 1440 min)
+state.gameMinutes = (state.gameMinutes + state.timeSpeed * dt) % 1440;
+// Odrastanie bawełny
+cottonPlants.forEach(p => {
+if (!p.grown) {
+p.regrowTimer -= dt;
+if (p.regrowTimer <= 0) p.grown = true;
+}
+});
+// Boost
+if (state.boost.active) {
+state.boost.timer -= dt;
+if (state.boost.timer <= 0) {
+state.boost.active = false;
+state.boost.cooldownTimer = state.boost.cooldown;
+}
+} else if (state.boost.cooldownTimer > 0) {
+state.boost.cooldownTimer = Math.max(0, state.boost.cooldownTimer - dt);
+}
+// Unoszące się napisy z zarobkiem
+floatingTexts.forEach(ft => { ft.y -= 25 * dt; ft.alpha -= 0.9 * dt; });
+floatingTexts = floatingTexts.filter(ft => ft.alpha > 0);
+updateWorkers(dt);
+updateHUD();
+}
+// --- RENDEROWANIE ---
+function draw() {
+ctx.clearRect(0, 0, canvas.width, canvas.height);
+// Tło pola uprawnego
+ctx.fillStyle = "#58943c";
+ctx.fillRect(fieldArea.gx * TILE_SIZE, fieldArea.gy * TILE_SIZE, fieldArea.gw * TILE_SIZE, fieldArea.gh * TILE_SIZE);
+ctx.strokeStyle = "#487eb0";
+ctx.lineWidth = 2;
+ctx.strokeRect(fieldArea.gx * TILE_SIZE, fieldArea.gy * TILE_SIZE, fieldArea.gw * TILE_SIZE, fieldArea.gh * TILE_SIZE);
+// Punkt skupu
+ctx.fillStyle = "#d35400";
+ctx.fillRect(depot.gx * TILE_SIZE, depot.gy * TILE_SIZE, depot.gw * TILE_SIZE, depot.gh * TILE_SIZE);
+ctx.strokeStyle = "#f39c12";
+ctx.strokeRect(depot.gx * TILE_SIZE, depot.gy * TILE_SIZE, depot.gw * TILE_SIZE, depot.gh * TILE_SIZE);
+ctx.fillStyle = "#fff";
+ctx.font = "bold 12px sans-serif";
+ctx.textAlign = "center";
+ctx.fillText("SKUP", (depot.gx + 1.5) * TILE_SIZE, (depot.gy + 1.6) * TILE_SIZE);
+// Rośliny bawełny
+cottonPlants.forEach(p => {
+// Krzaczek
+ctx.fillStyle = "#27ae60";
+ctx.beginPath();
+ctx.arc(p.x, p.y, 7, 0, Math.PI * 2);
+ctx.fill();
+// Puszysta biała bawełna
+if (p.grown) {
+ctx.fillStyle = "#ffffff";
+ctx.beginPath();
+ctx.arc(p.x - 3, p.y - 2, 4, 0, Math.PI * 2);
+ctx.arc(p.x + 3, p.y - 1, 4, 0, Math.PI * 2);
+ctx.arc(p.x, p.y + 3, 4, 0, Math.PI * 2);
+ctx.fill();
+}
+});
+// Chaty rolników
+huts.forEach(h => {
+const px = h.gx * TILE_SIZE;
+const py = h.gy * TILE_SIZE;
+const size = TILE_SIZE * 2;
+ctx.fillStyle = h.id === state.selectedHutId ? "#fbc531" : "#8c7ae6";
+ctx.fillRect(px, py, size, size);
+ctx.strokeStyle = "#2f3640";
+ctx.lineWidth = 2;
+ctx.strokeRect(px, py, size, size);
+ctx.fillStyle = "#1e272e";
+ctx.font = "bold 11px sans-serif";
+ctx.textAlign = "center";
+ctx.fillText(`Chata Lv.${h.level}`, px + size / 2, py + 24);
+ctx.fillText(`${h.workers.length}/${h.capacity} os.`, px + size / 2, py + 42);
+});
+// Pracownicy
+workers.forEach(w => {
+if (w.insideHut) return;
+// Aura boosta
+if (state.boost.active) {
+ctx.strokeStyle = "#ff5252";
+ctx.lineWidth = 2;
+ctx.beginPath();
+ctx.arc(w.x, w.y, 12, 0, Math.PI * 2);
+ctx.stroke();
+}
+ctx.fillStyle = w.color;
+ctx.beginPath();
+ctx.arc(w.x, w.y, 8, 0, Math.PI * 2);
+ctx.fill();
+ctx.strokeStyle = "#fff";
+ctx.lineWidth = 1.5;
+ctx.stroke();
+// Koszyk z bawełną nad głową
+if (w.carrying > 0) {
+ctx.fillStyle = "#fff";
+ctx.beginPath();
+ctx.arc(w.x, w.y - 10, 4 + w.carrying, 0, Math.PI * 2);
+ctx.fill();
+}
+});
+// Efekty zarobku
+floatingTexts.forEach(ft => {
+ctx.fillStyle = `rgba(255, 255, 255, ${ft.alpha})`;
+ctx.font = "bold 14px sans-serif";
+ctx.fillText(ft.text, ft.x, ft.y);
+});
+}
+// --- INTERFEJS UŻYTKOWNIKA (HUD + PANEL BOCZNY) ---
+function updateHUD() {
+document.getElementById('ui-money').textContent = state.money;
+const hrs = String(Math.floor(state.gameMinutes / 60)).padStart(2, '0');
+const mins = String(Math.floor(state.gameMinutes % 60)).padStart(2, '0');
+document.getElementById('ui-time').textContent = `${hrs}:${mins}`;
+const shiftBadge = document.getElementById('ui-shift');
+if (isWorkTime()) {
+shiftBadge.textContent = "ZBIORY W TOKU (do 20:00)";
+shiftBadge.className = "status-badge status-work";
+} else {
+shiftBadge.textContent = "Odpoczynek (Start 11:00)";
+shiftBadge.className = "status-badge";
+}
+const btnBoost = document.getElementById('btn-boost');
+if (state.boost.active) {
+btnBoost.textContent = `⚡ BOOST AKTYWNY (${state.boost.timer.toFixed(1)}s)`;
+btnBoost.disabled = true;
+} else if (state.boost.cooldownTimer > 0) {
+btnBoost.textContent = `⏳ Odnowienie (${Math.ceil(state.boost.cooldownTimer)}s)`;
+btnBoost.disabled = true;
+} else {
+btnBoost.textContent = `⚡ BOOST (x${state.boost.multiplier.toFixed(1)})`;
+btnBoost.disabled = false;
+}
+const btnBuild = document.getElementById('btn-build-hut');
+btnBuild.disabled = state.money < 150;
+btnBuild.classList.toggle('active', state.buildMode);
+}
+function renderSidebar() {
+const container = document.getElementById('dynamic-panel');
+if (state.activeTab === 'shop') {
+const costDur = state.boost.lvlDuration * 120;
+const costPow = state.boost.lvlPower * 160;
+const costCd = state.boost.lvlCooldown * 140;
+container.innerHTML = `<div class="panel-card"> <h3>🛒 Sklep: Ulepszenia Boosta</h3> <div class="panel-row"> <span>Czas trwania (${state.boost.duration}s)</span> <button onclick="buyBoostUpgrade('duration', ${costDur})" ${state.money < costDur ? 'disabled' : ''}>+2s (${costDur}$)</button> </div> <div class="panel-row"> <span>Moc przyspieszenia (x${state.boost.multiplier.toFixed(1)})</span> <button onclick="buyBoostUpgrade('power', ${costPow})" ${state.money < costPow ? 'disabled' : ''}>+0.3x (${costPow}$)</button> </div> <div class="panel-row"> <span>Czas odnowienia (${state.boost.cooldown}s)</span> <button onclick="buyBoostUpgrade('cooldown', ${costCd})" ${state.money < costCd || state.boost.cooldown <= 6 ? 'disabled' : ''}>-2s (${costCd}$)</button> </div> </div>`;
+return;
+}
+const hut = huts.find(h => h.id === state.selectedHutId);
+if (!hut) {
+container.innerHTML = `<div class="panel-card"><p class="hint">Kliknij dowolną chatę na mapie, aby zarządzać pracownikami.</p></div>`;
+return;
+}
+const capCost = hut.capacity * 90;
+const lvlCost = hut.level * 220;
+let hireButtonsHTML = '';
+WORKER_TIERS.forEach((tier, idx) => {
+const unlocked = hut.level >= tier.tier;
+const canHire = unlocked && hut.workers.length < hut.capacity && state.money >= tier.cost;
+hireButtonsHTML += `<div class="panel-row"> <span>${unlocked ? tier.name : '🔒 Wymaga Lv.' + tier.tier}</span> <button onclick="hireWorker(${hut.id}, ${idx})" ${!canHire ? 'disabled' : ''}>Zatrudnij (${tier.cost}$)</button> </div>`;
+});
+const workersListHTML = hut.workers.map(w =>
+`<div class="worker-item"><span>${w.name}</span><span>Kosz: ${w.carrying}/${w.maxCarry}</span></div>`
+).join('');
+container.innerHTML = `<div class="panel-card"> <h3>🏠 Chata Rolników (Poziom ${hut.level}/3)</h3> <div class="panel-row"> <span>Pojemność: <b>${hut.workers.length} / ${hut.capacity}</b></span> <button onclick="upgradeHutCapacity(${hut.id})" ${state.money < capCost ? 'disabled' : ''}>+2 miejsca (${capCost}$)</button> </div> <div class="panel-row"> <span>Poziom chaty: <b>Lv.${hut.level}</b></span> <button onclick="upgradeHutLevel(${hut.id})" ${hut.level >= 3 || state.money < lvlCost ? 'disabled' : ''}> ${hut.level >= 3 ? 'MAX' :`Awans (${lvlCost}$)`} </button> </div> <hr style="border-color:#353b48; margin:10px 0;"> <b>Zatrudnij pracownika:</b> ${hireButtonsHTML} <div class="worker-list">${workersListHTML || '<span class="hint">Brak pracowników w chacie</span>'}</div> </div> `;
+}
+window.buyBoostUpgrade = function(type, cost) {
+if (state.money < cost) return;
+state.money -= cost;
+if (type === 'duration') { state.boost.duration += 2; state.boost.lvlDuration++; }
+if (type === 'power') { state.boost.multiplier += 0.3; state.boost.lvlPower++; }
+if (type === 'cooldown') { state.boost.cooldown = Math.max(6, state.boost.cooldown - 2); state.boost.lvlCooldown++; }
+renderSidebar();
+};
+// --- ZDARZENIA KLIKNIĘĆ ---
+document.getElementById('btn-build-hut').addEventListener('click', () => {
+state.buildMode = !state.buildMode;
+});
+document.getElementById('btn-boost').addEventListener('click', () => {
+if (!state.boost.active && state.boost.cooldownTimer <= 0) {
+state.boost.active = true;
+state.boost.timer = state.boost.duration;
+}
+});
+document.getElementById('btn-shop').addEventListener('click', () => {
+state.activeTab = state.activeTab === 'shop' ? 'hut' : 'shop';
+renderSidebar();
+});
+canvas.addEventListener('click', (e) => {
+const rect = canvas.getBoundingClientRect();
+const mx = e.clientX - rect.left;
+const my = e.clientY - rect.top;
+const gx = Math.floor(mx / TILE_SIZE);
+const gy = Math.floor(my / TILE_SIZE);
+// Tryb budowania nowej chaty
+if (state.buildMode) {
+if (state.money < 150) return;
+// Sprawdź czy teren jest wolny i poza polem bawełny
+const onField = gx >= fieldArea.gx - 1 && gx <= fieldArea.gx + fieldArea.gw;
+const blocked = walkGrid[gy]?.[gx] === 1 || walkGrid[gy + 1]?.[gx] === 1 ||
+walkGrid[gy]?.[gx + 1] === 1 || walkGrid[gy + 1]?.[gx + 1] === 1;
+if (!onField && !blocked && gy < ROWS - 2 && gx < COLS - 2) {
+state.money -= 150;
+createHut(gx, gy);
+state.buildMode = false;
+}
+return;
+}
+// Wybór istniejącej chaty
+const clickedHut = huts.find(h => gx >= h.gx && gx < h.gx + 2 && gy >= h.gy && gy < h.gy + 2);
+if (clickedHut) {
+state.selectedHutId = clickedHut.id;
+state.activeTab = 'hut';
+renderSidebar();
+}
+});
+// --- START GRY ---
+resizeCanvas();
+generateCottonField();
+createHut(3, 4); // Startowa chata
+state.money = 150; // Startowa gotówka na pierwszych pracowników
+renderSidebar();
+let lastTime = performance.now();
+function loop(now) {
+const dt = Math.min(0.1, (now - lastTime) / 1000);
+lastTime = now;
+update(dt);
+draw();
+requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+</script>
 </body>
 </html>
