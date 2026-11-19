@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menu Restauracji - Wersja Polska</title>
+  <style>
+    :root {
+      --bg-color: #faf8f5;
+      --card-bg: #ffffff;
+      --text-main: #2c2c2c;
+      --text-muted: #666666;
+      --accent: #1d4e69;
+      --price-color: #b5542c;
+      --border-color: #e6e2dc;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding: 20px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      padding: 32px;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    }
+    header {
+      text-align: center;
+      margin-bottom: 36px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid var(--accent);
+    }
+    header h1 {
+      font-size: 2.2rem;
+      color: var(--accent);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    section {
+      margin-bottom: 36px;
+    }
+    section h2 {
+      font-size: 1.35rem;
+      color: var(--accent);
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 8px;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .menu-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 12px 0;
+      border-bottom: 1px dashed var(--border-color);
+      gap: 16px;
+    }
+    .menu-item:last-child {
+      border-bottom: none;
+    }
+    .item-info {
+      flex: 1;
+    }
+    .item-title {
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--text-main);
+    }
+    .item-orig {
+      font-weight: 400;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+    .item-desc {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .item-price {
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--price-color);
+      white-space: nowrap;
+    }
+    .allergens-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      list-style: none;
+      margin-top: 12px;
+    }
+    .allergens-list li {
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+    @media (max-width: 600px) {
+      .container {
+        padding: 18px;
+      }
+      header h1 {
+        font-size: 1.7rem;
+      }
+      section h2 {
+        font-size: 1.15rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>MENU</h1>
+    </header>
+
+    <!-- PRZYSTAWKI RYBNE -->
+    <section>
+      <h2>Przystawki z ryb i owoców morza (Antipasti di Pesce)</h2>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Półmisek przystawek rybnych <span class="item-orig">(Antipasto Misto di Pesce)</span></div>
+          <div class="item-desc">Degustacja naszych przystawek rybnych, polecana dla 2 osób.</div>
+        </div>
+        <div class="item-price">35.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Surowe owoce morza <span class="item-orig">(Crudi di Mare)</span></div>
+          <div class="item-desc">Wybór najwyższej jakości surowych langustynek (2 szt.) oraz czerwonych krewetek z Mazara del Vallo (2 szt.).</div>
+        </div>
+        <div class="item-price">30.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Morskie Caprese <span class="item-orig">(Caprese di Mare)</span></div>
+          <div class="item-desc">Burrata z pomidorami, bottargą z tuńczyka i limonką.</div>
+        </div>
+        <div class="item-price">12.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Morska Bruschetta <span class="item-orig">(Bruschettone di Mare)</span></div>
+          <div class="item-desc">Duża grzanka zbożowa z filetami z sardeli (anchois), suszonymi pomidorami, bazylią i burratą.</div>
+        </div>
+        <div class="item-price">13.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Sałatka z ośmiornicy <span class="item-orig">(Insalata di Polpo)</span></div>
+          <div class="item-desc">Sałatka z ośmiornicy z mieszanką warzyw, doprawiona sycylijskimi cytrusami.</div>
+        </div>
+        <div class="item-price">12.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Grillowana ośmiornica <span class="item-orig">(Polpo Grigliato)</span></div>
+          <div class="item-desc">Grillowana ośmiornica na poduszce z hummusu z ciecierzycy i majonezem kaparowym.</div>
+        </div>
+        <div class="item-price">12.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Sardynki „Allinguate” <span class="item-orig">(Sarde Allinguate)</span></div>
+          <div class="item-desc">Tradycyjne sardynki marynowane w occie, panierowane i smażone.</div>
+        </div>
+        <div class="item-price">12.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Marynowana seriola <span class="item-orig">(Ricciola Marinata)</span></div>
+          <div class="item-desc">Śródziemnomorska seriola krojona nożem, marynowana z różowym pieprzem, rozmarynem, skórką z cytrusów i sosem mango.</div>
+        </div>
+        <div class="item-price">15.0 EUR</div>
+      </div>
+    </section>
+
+    <!-- PRZYSTAWKI LĄDOWE -->
+    <section>
+      <h2>Przystawki lądowe (Antipasti di Terra)</h2>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Półmisek przystawek lądowych (dla 2 osób) <span class="item-orig">(Misto di Terra)</span></div>
+          <div class="item-desc">Zestaw serów sycylijskich podawanych z konfiturami i miodem, przyprawiane zielone oliwki, burrata oraz suszone pomidory.</div>
+        </div>
+        <div class="item-price">20.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Klasyczna Bruschetta <span class="item-orig">(Bruschettone di Terra)</span></div>
+          <div class="item-desc">Duża rustykalna grzanka zbożowa z suszonymi pomidorami, burratą i bazylią.</div>
+        </div>
+        <div class="item-price">12.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Caponata z bakłażana <span class="item-orig">(Caponata di Melenzane)</span></div>
+          <div class="item-desc">Tradycyjna sycylijska caponata z bakłażanów.</div>
+        </div>
+        <div class="item-price">10.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Caprese z burratą <span class="item-orig">(Caprese con Burrata)</span></div>
+          <div class="item-desc">Sałatka Caprese ze świeżą mozzarellą burrata.</div>
+        </div>
+        <div class="item-price">12.0 EUR</div>
+      </div>
+    </section>
+
+    <!-- PIERWSZE DANIA Z RYB -->
+    <section>
+      <h2>Pierwsze dania z ryb i owoców morza (Primi di Pesce)</h2>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Busiate z duszonym sosem z ośmiornicy <span class="item-orig">(Busiate al Polpo Strozzato)</span></div>
+          <div class="item-desc">Makaron busiate w lekko pikantnym sosie z duszonej ośmiornicy.</div>
+        </div>
+        <div class="item-price">19.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Busiate z krewetkami i pistacjami <span class="item-orig">(Busiate Gamberi e Pistacchio)</span></div>
+          <div class="item-desc">Makaron busiate z czerwonymi krewetkami z Mazary duszonymi w brandy, z kremem pistacjowym i bazylią.</div>
+        </div>
+        <div class="item-price">20.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Kuskus po trapańsku <span class="item-orig">(Cous Cous alla Trapanese)</span></div>
+          <div class="item-desc">Kuskus gotowany na parze z wywarem rybnym według dawnej tradycji z Trapani.</div>
+        </div>
+        <div class="item-price">20.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Linguine z bottargą i czerwoną krewetką <span class="item-orig">(Linguine Bottarga e Rosso)</span></div>
+          <div class="item-desc">Makaron linguine z bottargą z tuńczyka, tatarem z czerwonych krewetek z Mazary, papryczką chili i czosnkiem o aromacie cytryny.</div>
+        </div>
+        <div class="item-price">22.0 EUR</div>
+      </div>
+    </section>
+
+    <!-- PIERWSZE DANIA LĄDOWE -->
+    <section>
+      <h2>Pierwsze dania lądowe (Primi di Terra)</h2>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Busiate alla Norma <span class="item-orig">(Busiate alla Norma)</span></div>
+          <div class="item-desc">Makaron busiate z sosem pomidorowym, smażonym bakłażanem i słoną ricottą.</div>
+        </div>
+        <div class="item-price">16.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Busiate z pesto po trapańsku <span class="item-orig">(Busiate al Pesto Trapanese)</span></div>
+          <div class="item-desc">Makaron busiate z tradycyjnym pesto trapańskim, prażoną bułką tartą i smażonym bakłażanem.</div>
+        </div>
+        <div class="item-price">18.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Busiate z ragù z sycylijskiego prosiaka <span class="item-orig">(Busiate con Ragù di Maialino Siciliano)</span></div>
+          <div class="item-desc">Makaron busiate z mięsnym sosem ragù z sycylijskiej wieprzowiny.</div>
+        </div>
+        <div class="item-price">20.0 EUR</div>
+      </div>
+    </section>
+
+    <!-- DANIA GŁÓWNE Z RYB -->
+    <section>
+      <h2>Dania główne z ryb i owoców morza (Secondi di Mare)</h2>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Mieszanka smażonych owoców morza <span class="item-orig">(Frittura Mista)</span></div>
+          <div class="item-desc">Smażone kalmary, sardynki i ośmiornica.</div>
+        </div>
+        <div class="item-price">24.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Smażone kalmary <span class="item-orig">(Frittura di Calamari)</span></div>
+          <div class="item-desc">Smażone krążki kalmarów.</div>
+        </div>
+        <div class="item-price">20.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Grillowany kalmar <span class="item-orig">(Calamaro alla Griglia)</span></div>
+          <div class="item-desc">Kalmar z grilla.</div>
+        </div>
+        <div class="item-price">18.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Mieszanka ryb i owoców morza z grilla <span class="item-orig">(Grigliata Mista di Pesce)</span></div>
+          <div class="item-desc">Grillowany miecznik, duże krewetki, langustynki i kalmar – polecane dla 2 osób.</div>
+        </div>
+        <div class="item-price">60.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Grillowany miecznik <span class="item-orig">(Pesce Spada alla Griglia)</span></div>
+          <div class="item-desc">Stek z miecznika z grilla.</div>
+        </div>
+        <div class="item-price">22.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Grillowane krewetki z Mazary <span class="item-orig">(Gamberoni di Mazara alla Griglia)</span></div>
+          <div class="item-desc">Duże krewetki z Mazara del Vallo z grilla.</div>
+        </div>
+        <div class="item-price">30.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Granik „alla Matalotta” <span class="item-orig">(Cernia alla Matalotta)</span></div>
+          <div class="item-desc">Granik duszony w sosie z pomidorkami koktajlowymi.</div>
+        </div>
+        <div class="item-price">24.0 EUR</div>
+      </div>
+    </section>
+
+    <!-- DANIA GŁÓWNE MIĘSNE -->
+    <section>
+      <h2>Dania główne mięsne (Secondi di Terra)</h2>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Kotlet cielęcy po palermsku <span class="item-orig">(Cotoletta alla Palermitana)</span></div>
+          <div class="item-desc">Panierowany kotlet cielęcy w stylu palermskim z frytkami.</div>
+        </div>
+        <div class="item-price">16.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Grillowany filet wołowy <span class="item-orig">(Filetto di Manzo alla Griglia)</span></div>
+          <div class="item-desc">Grillowana polędwica wołowa z ziemniakami podsmażanymi na maśle i świeżymi ziołami aromatycznymi.</div>
+        </div>
+        <div class="item-price">24.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Sycylijska wołowina wolno gotowana <span class="item-orig">(Reale di Manzo Siciliano)</span></div>
+          <div class="item-desc">Sycylijska wołowina gotowana w niskiej temperaturze, podawana z redukcją z wina Marsala i purée ziemniaczanym.</div>
+        </div>
+        <div class="item-price">20.0 EUR</div>
+      </div>
+    </section>
+
+    <!-- DODATKI -->
+    <section>
+      <h2>Dodatki (Contorni)</h2>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Sałatka z kopru włoskiego i pomarańczy <span class="item-orig">(Insalata di Finocchi e Arance)</span></div>
+        </div>
+        <div class="item-price">5.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Sałatka mieszana <span class="item-orig">(Insalata Mista)</span></div>
+          <div class="item-desc">Sałatka z mieszanki warzyw: sałata, świeże pomidorki koktajlowe, marchewka i cykoria radicchio.</div>
+        </div>
+        <div class="item-price">5.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Sałatka sycylijska <span class="item-orig">(Insalata Siciliana)</span></div>
+          <div class="item-desc">Tradycyjna sałatka ze świeżymi pomidorkami koktajlowymi, kaparami, oliwkami, cebulą i oregano.</div>
+        </div>
+        <div class="item-price">5.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Zielona sałata <span class="item-orig">(Insalata Verde)</span></div>
+          <div class="item-desc">Sałatka ze świeżej sałaty.</div>
+        </div>
+        <div class="item-price">5.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Frytki <span class="item-orig">(Patatine Fritte)</span></div>
+        </div>
+        <div class="item-price">5.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Ziemniaki podsmażane na maśle <span class="item-orig">(Patate Saltate al Burro)</span></div>
+          <div class="item-desc">Ziemniaki gotowane na parze w niskiej temperaturze z ziołami aromatycznymi i podsmażane na maśle.</div>
+        </div>
+        <div class="item-price">5.0 EUR</div>
+      </div>
+    </section>
+
+    <!-- DESERY -->
+    <section>
+      <h2>Desery (Dessert)</h2>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Sycylijskie Cannolo – 1 szt. <span class="item-orig">(Cannolo Siciliano - 1pz)</span></div>
+        </div>
+        <div class="item-price">5.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Tiramisù – Domowe <span class="item-orig">(Tiramisú - Homemade)</span></div>
+        </div>
+        <div class="item-price">5.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Cassata Sycylijska – Domowa <span class="item-orig">(Cassata Siciliana - Homemade)</span></div>
+        </div>
+        <div class="item-price">7.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Sernik <span class="item-orig">(Cheesecake)</span></div>
+          <div class="item-desc">Czekolada – Owoce leśne – Pistacja</div>
+        </div>
+        <div class="item-price">5.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Sycylijskie Cannolo bezglutenowe <span class="item-orig">(Cannolo Siciliano Gluten Free)</span></div>
+        </div>
+        <div class="item-price">5.5 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Sgroppino <span class="item-orig">(Sorbet cytrynowy z wódką i prosecco)</span></div>
+        </div>
+        <div class="item-price">5.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Sorbet cytrynowy <span class="item-orig">(Sorbetto al Limone)</span></div>
+        </div>
+        <div class="item-price">4.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Rum Zacapa 23 z płatkami czekolady <span class="item-orig">(Rum Zacapa 23 e Scaglie di Cioccolato)</span></div>
+        </div>
+        <div class="item-price">12.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Parfait migdałowe – Domowe <span class="item-orig">(Parfait di Mandorle - Homemade)</span></div>
+        </div>
+        <div class="item-price">5.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Sernik z czerwonymi owocami (bez glutenu, bez laktozy) <span class="item-orig">(Cheesecake Frutti Rossi)</span></div>
+        </div>
+        <div class="item-price">6.0 EUR</div>
+      </div>
+    </section>
+
+    <!-- NAPOJE -->
+    <section>
+      <h2>Napoje i Kawy (Bibite)</h2>
+
+      <div class="menu-item">
+        <div class="item-info"><div class="item-title">Woda niegazowana <span class="item-orig">(Acqua Naturale)</span></div></div>
+        <div class="item-price">2.5 EUR</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Piwo Birra dello Stretto <span class="item-orig">(Birra dello Stretto)</span></div>
+          <div class="item-desc">33 cl – lager</div>
+        </div>
+        <div class="item-price">5.0 EUR</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><div class="item-title">Kawa Americano <span class="item-orig">(Caffè Americano)</span></div></div>
+        <div class="item-price">2.0 EUR</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><div class="item-title">Woda gazowana <span class="item-orig">(Acqua Frizzante)</span></div></div>
+        <div class="item-price">2.5 EUR</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><div class="item-title">Piwo bezalkoholowe Nastro <span class="item-orig">(Birra Analcolica Nastro)</span></div></div>
+        <div class="item-price">5.0 EUR</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><div class="item-title">Kawa Espresso <span class="item-orig">(Caffè Espresso)</span></div></div>
+        <div class="item-price">1.2 EUR</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><div class="item-title">Kieliszek wina <span class="item-orig">(Calice di Vino)</span></div></div>
+        <div class="item-price">6.0 EUR</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><div class="item-title">Coca-Cola 33 cl</div></div>
+        <div class="item-price">3.0 EUR</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><div class="item-title">Fanta 33 cl</div></div>
+        <div class="item-price">3.0 EUR</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><div class="item-title">Kieliszek Prosecco <span class="item-orig">(Calice di Prosecco)</span></div></div>
+        <div class="item-price">6.0 EUR</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><div class="item-title">Schweppes Lemon</div></div>
+        <div class="item-price">2.5 EUR</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><div class="item-title">Schweppes Tonic</div></div>
+        <div class="item-price">2.5 EUR</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><div class="item-title">Sprite 33 cl</div></div>
+        <div class="item-price">3.0 EUR</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><div class="item-title">Woda mineralna Ferrarelle</div></div>
+        <div class="item-price">3.0 EUR</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><div class="item-title">Crodino (aperitif bezalkoholowy)</div></div>
+        <div class="item-price">3.0 EUR</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">San Bitter bezalkoholowy <span class="item-orig">(San Bitter Analcolico)</span></div>
+          <div class="item-desc">Biały (Bianco)</div>
+        </div>
+        <div class="item-price">3.0 EUR</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><div class="item-title">Butelka Prosecco <span class="item-orig">(Bottiglia Prosecco)</span></div></div>
+        <div class="item-price">18.0 EUR</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><div class="item-title">Herbata brzoskwiniowa <span class="item-orig">(Tè alla Pesca)</span></div></div>
+        <div class="item-price">3.0 EUR</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><div class="item-title">Herbata cytrynowa <span class="item-orig">(Tè al Limone)</span></div></div>
+        <div class="item-price">3.0 EUR</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><div class="item-title">Podwójne Espresso <span class="item-orig">(Caffè Doppio)</span></div></div>
+        <div class="item-price">2.4 EUR</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><div class="item-title">Caffè Corretto (espresso z kroplą alkoholu)</div></div>
+        <div class="item-price">2.0 EUR</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><div class="item-title">Kawa jęczmienna duża <span class="item-orig">(Caffè Orzo Grande)</span></div></div>
+        <div class="item-price">2.0 EUR</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><div class="item-title">Kawa z żeń-szeniem duża <span class="item-orig">(Ginseng Grande)</span></div></div>
+        <div class="item-price">2.0 EUR</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><div class="item-title">Sok owocowy <span class="item-orig">(Succo di Frutta)</span></div></div>
+        <div class="item-price">2.5 EUR</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><div class="item-title">Kawa jęczmienna mała <span class="item-orig">(Caffè Orzo Piccolo)</span></div></div>
+        <div class="item-price">1.5 EUR</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><div class="item-title">Napar ziołowy do wyboru <span class="item-orig">(Tisana a scelta)</span></div></div>
+        <div class="item-price">3.0 EUR</div>
+      </div>
+      <div class="menu-item">
+        <div class="item-info"><div class="item-title">Kawa z żeń-szeniem mała <span class="item-orig">(Ginseng Piccolo)</span></div></div>
+        <div class="item-price">1.5 EUR</div>
+      </div>
+    </section>
+
+    <!-- SZAMPANY I WINA MUSUJĄCE -->
+    <section>
+      <h2>Szampany i Wina Musujące (Champagne &amp; Bollicine)</h2>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">FRANCIACORTA 'Muratori' SIMBIOTICO (bio – zero siarczynów)</div>
+        </div>
+        <div class="item-price">48.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">FRANCIACORTA 'Faccoli' BRUT (Chardonnay 60%, Pinot Bianco 20%, Pinot Noir 20%)</div>
+          <div class="item-desc">Rzemieślnicza Franciacorta, orzeźwiająca i bardzo pijalna, kryjąca za pozorną bezpośredniością wielką głębię: delikatna słodycz w ustach opiera się na świeżych cytrusach, z finiszem o pięknym napięciu.</div>
+        </div>
+        <div class="item-price">55.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">FRANCIACORTA 'Muratori' ROSÈ EXTRA BRUT</div>
+        </div>
+        <div class="item-price">40.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">CHAMPAGNE BLANC DE BLANCS 'Alain Couvreur' (100% Chardonnay)</div>
+          <div class="item-desc">Szlachetny, subtelny i wyrafinowany szampan z nutami owocowymi. Niezrównana świeżość, nie boi się wymagających dań.</div>
+        </div>
+        <div class="item-price">68.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">SPUMANTE PROSECCO DOC BRUT 'Pizzolato' (organiczne)</div>
+        </div>
+        <div class="item-price">22.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">CHAMPAGNE BLANC DE NOIR 'Alain Couvreur' (Pinot Noir 97%, Pinot Meunier 3%)</div>
+          <div class="item-desc">Owocowy i wyrazisty szampan, zaskakujący długością finiszu na podniebieniu.</div>
+        </div>
+        <div class="item-price">66.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">FRANCIACORTA 'Muratori' BLANC DE NOIRS</div>
+        </div>
+        <div class="item-price">42.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">CHAMPAGNE FLEURY (Extra Brut) Pinot Noir 100%</div>
+          <div class="item-desc">Doskonały do wyrazistych aperitifów, pierwszych dań i białych ryb. Dojrzały, soczysty, pełen smaku i winny.</div>
+        </div>
+        <div class="item-price">82.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">CHAMPAGNE O.BELIN (100% Pinot Meunier)</div>
+          <div class="item-desc">Dobra dojrzałość, żółte brzoskwinie, suszone morele, nuty waniliowe. W ustach owoce łączą się z nutami karmelu i opiekanego chleba.</div>
+        </div>
+        <div class="item-price">75.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">CHAMPAGNE TARLANT Rosé Brut (42% Pinot Noir, 37% Chardonnay, 21% Meunier)</div>
+          <div class="item-desc">Zaproszenie do delektowania się najbardziej eksplozywnym, owocowym i korzennym rosé. Elegancja, brak cukru i bogactwo emocji, które wywołuje.</div>
+        </div>
+        <div class="item-price">120.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">FRANCIACORTA 'Faccoli' ROSÈ BRUT (70% Pinot Noir, 20% Chardonnay, 10% Pinot Bianco)</div>
+          <div class="item-desc">Radosne i pasjonujące wino, które z uporem eksponuje mineralny charakter tych winnic.</div>
+        </div>
+        <div class="item-price">58.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">SPUMANTE PROSECCO DOC BRUT ROSÈ 'Pizzolato' (organiczne)</div>
+        </div>
+        <div class="item-price">24.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">SPUMANTE BIANCO EXTRA DRY 'CA Perla'</div>
+        </div>
+        <div class="item-price">19.0 EUR</div>
+      </div>
+    </section>
+
+    <!-- CANTINA PLANETA -->
+    <section>
+      <h2>Winnica Planeta (Menfi – Etna – Noto)</h2>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">SANTA CECILIA '2021</div>
+          <div class="item-desc">100% Nero d'Avola</div>
+        </div>
+        <div class="item-price">59.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">SITO DELL'ULMO</div>
+        </div>
+        <div class="item-price">30.0 EUR</div>
+      </div>
+    </section>
+
+    <!-- CANTINA DONNAFUGATA -->
+    <section>
+      <h2>Winnica Donnafugata (Marsala)</h2>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">ANTHILIA</div>
+          <div class="item-desc">Lucido, Catarratto</div>
+        </div>
+        <div class="item-price">22.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">LA FUGA</div>
+          <div class="item-desc">Chardonnay</div>
+        </div>
+        <div class="item-price">27.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">SEDARA</div>
+          <div class="item-desc">Nero d'Avola z przewagą w kupażu z innymi szczepami</div>
+        </div>
+        <div class="item-price">22.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">SHERAZADE</div>
+          <div class="item-desc">Nero d'Avola</div>
+        </div>
+        <div class="item-price">24.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">SUL VULCANO ETNA BIANCO DOC</div>
+          <div class="item-desc">Carricante</div>
+        </div>
+        <div class="item-price">34.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">SUL VULCANO ETNA ROSSO DOC</div>
+          <div class="item-desc">Nerello Mascalese</div>
+        </div>
+        <div class="item-price">34.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">SUR SUR</div>
+          <div class="item-desc">Grillo</div>
+        </div>
+        <div class="item-price">24.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">VIGNA DI GABRI</div>
+          <div class="item-desc">Lucido DOC, Blanc, Viognier, Chardonnay, Sauvignon</div>
+        </div>
+        <div class="item-price">28.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">FLORAMUNDI</div>
+          <div class="item-desc">Cerasuolo di Vittoria DOCG</div>
+        </div>
+        <div class="item-price">24.0 EUR</div>
+      </div>
+    </section>
+
+    <!-- CANTINA FAZIO -->
+    <section>
+      <h2>Winnica Fazio (Trapani – Erice)</h2>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">AEGADES</div>
+          <div class="item-desc">Grillo</div>
+        </div>
+        <div class="item-price">24.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">CALEBIANCHE</div>
+          <div class="item-desc">Catarratto</div>
+        </div>
+        <div class="item-price">24.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">GRILLI DI MARE</div>
+          <div class="item-desc">Białe wino lekko musujące (frizzante)</div>
+        </div>
+        <div class="item-price">24.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">MONT'ELIMO</div>
+          <div class="item-desc">Catarratto</div>
+        </div>
+        <div class="item-price">22.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">MONT'ELIMO</div>
+          <div class="item-desc">Grillo</div>
+        </div>
+        <div class="item-price">22.0 EUR</div>
+      </div>
+    </section>
+
+    <!-- CANTINA FINA -->
+    <section>
+      <h2>Winnica Fina (Marsala)</h2>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">HANAMI</div>
+          <div class="item-desc">Różowe wino organiczne</div>
+        </div>
+        <div class="item-price">24.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">KEBRILLA</div>
+          <div class="item-desc">Grillo</div>
+        </div>
+        <div class="item-price">22.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">LA STANZA DEL RE</div>
+          <div class="item-desc">Chardonnay</div>
+        </div>
+        <div class="item-price">29.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">MAKISÈ</div>
+          <div class="item-desc">Białe wino lekko musujące (frizzante)</div>
+        </div>
+        <div class="item-price">24.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">NERO D'AVOLA</div>
+        </div>
+        <div class="item-price">22.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">PERRICONE</div>
+        </div>
+        <div class="item-price">25.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">Białe wino musujące <span class="item-orig">(Vino Bianco Frizzante Spumante)</span></div>
+        </div>
+        <div class="item-price">35.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">SYRAH</div>
+          <div class="item-desc">Czerwone wino organiczne</div>
+        </div>
+        <div class="item-price">24.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">TAIF</div>
+          <div class="item-desc">Zibibbo</div>
+        </div>
+        <div class="item-price">24.0 EUR</div>
+      </div>
+    </section>
+
+    <!-- CANTINA FIRRIATO -->
+    <section>
+      <h2>Winnica Firriato (Trapani – Etna)</h2>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">CAELES</div>
+          <div class="item-desc">Grillo D.O.C.</div>
+        </div>
+        <div class="item-price">24.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">CHIARAMONTE</div>
+          <div class="item-desc">Inzolia D.O.C.</div>
+        </div>
+        <div class="item-price">24.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">CHARME CLERÌ ROSATO</div>
+        </div>
+        <div class="item-price">26.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">LE SABBIE DELL'ETNA</div>
+          <div class="item-desc">Nerello Mascalese, Nerello Cappuccio</div>
+        </div>
+        <div class="item-price">29.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">CHARME BIANCO</div>
+          <div class="item-desc">Białe wino lekko musujące (frizzante)</div>
+        </div>
+        <div class="item-price">24.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">GAUDENSIUS BLANC DE BLANC</div>
+          <div class="item-desc">Wino musujące – Carricante</div>
+        </div>
+        <div class="item-price">40.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">CHARME ROSÈ</div>
+          <div class="item-desc">Różowe wino lekko musujące (frizzante)</div>
+        </div>
+        <div class="item-price">24.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">ALTAVILLA DELLA CORTE</div>
+          <div class="item-desc">Cabernet Sauvignon</div>
+        </div>
+        <div class="item-price">25.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">CAELES CATARRATTO</div>
+          <div class="item-desc">Catarratto Bio</div>
+        </div>
+        <div class="item-price">24.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">CHARME CLERÌ BIANCO</div>
+          <div class="item-desc">Chardonnay, Moscato Bianco, Carricante</div>
+        </div>
+        <div class="item-price">26.0 EUR</div>
+      </div>
+    </section>
+
+    <!-- CANTINA FONDO ANTICO -->
+    <section>
+      <h2>Winnica Fondo Antico (Trapani)</h2>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">BELLO MIO</div>
+          <div class="item-desc">Zibibbo</div>
+        </div>
+        <div class="item-price">24.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">GRILLO PARLANTE</div>
+          <div class="item-desc">Grillo D.O.C.</div>
+        </div>
+        <div class="item-price">24.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">NENÈ</div>
+          <div class="item-desc">Nero d'Avola</div>
+        </div>
+        <div class="item-price">27.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">SOLE</div>
+          <div class="item-desc">Inzolia</div>
+        </div>
+        <div class="item-price">24.0 EUR</div>
+      </div>
+    </section>
+
+    <!-- CANTINA MURUASICCO -->
+    <section>
+      <h2>Winnica Muruasicco (Etna)</h2>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">ETNA DOC ROSATO</div>
+          <div class="item-desc">90% Nerello Mascalese, 10% Nerello Cappuccio</div>
+        </div>
+        <div class="item-price">35.0 EUR</div>
+      </div>
+
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">ETNA DOC ROSSO</div>
+          <div class="item-desc">90% Nerello Mascalese, 10% Nerello Cappuccio</div>
+        </div>
+        <div class="item-price">35.0 EUR</div>
+      </div>
+    </section>
+
+    <!-- KOKTAJLE -->
+    <section>
+      <h2>Koktajle (Cocktails)</h2>
+
+      <div class="menu-item"><div class="item-info"><div class="item-title">AMERICANO</div></div><div class="item-price">8.0 EUR</div></div>
+      <div class="menu-item"><div class="item-info"><div class="item-title">APEROL SPRITZ</div></div><div class="item-price">8.0 EUR</div></div>
+      <div class="menu-item"><div class="item-info"><div class="item-title">CAMPARI SPRITZ</div></div><div class="item-price">8.0 EUR</div></div>
+      <div class="menu-item"><div class="item-info"><div class="item-title">NEGRONI</div></div><div class="item-price">8.0 EUR</div></div>
+      <div class="menu-item"><div class="item-info"><div class="item-title">NEGRONI SBAGLIATO</div></div><div class="item-price">8.0 EUR</div></div>
+      <div class="menu-item"><div class="item-info"><div class="item-title">NEGROSKY</div></div><div class="item-price">8.0 EUR</div></div>
+      <div class="menu-item"><div class="item-info"><div class="item-title">VODKA LEMON</div></div><div class="item-price">8.0 EUR</div></div>
+      <div class="menu-item"><div class="item-info"><div class="item-title">VODKA TONIC</div></div><div class="item-price">8.0 EUR</div></div>
+      <div class="menu-item"><div class="item-info"><div class="item-title">LIMONCELLO SPRITZ</div></div><div class="item-price">10.0 EUR</div></div>
+    </section>
+
+    <!-- DESTYLATY I LIKIERY -->
+    <section>
+      <h2>Destylaty i Likiery (Distillati e Liquori)</h2>
+
+      <div class="menu-item"><div class="item-info"><div class="item-title">AMARO AVERNA</div></div><div class="item-price">4.0 EUR</div></div>
+      <div class="menu-item"><div class="item-info"><div class="item-title">AMARO CYNAR</div></div><div class="item-price">4.0 EUR</div></div>
+      <div class="menu-item"><div class="item-info"><div class="item-title">AMARO JÄGERMEISTER</div></div><div class="item-price">4.0 EUR</div></div>
+      <div class="menu-item"><div class="item-info"><div class="item-title">AMARO MONTE POLIZO</div></div><div class="item-price">4.0 EUR</div></div>
+      <div class="menu-item"><div class="item-info"><div class="item-title">BALLANTINE'S</div></div><div class="item-price">8.0 EUR</div></div>
+      <div class="menu-item"><div class="item-info"><div class="item-title">GRAPPA BARRICATA (starzona w beczce)</div></div><div class="item-price">4.0 EUR</div></div>
+      <div class="menu-item"><div class="item-info"><div class="item-title">GRAPPA BIANCA (biała)</div></div><div class="item-price">4.0 EUR</div></div>
+      <div class="menu-item"><div class="item-info"><div class="item-title">LAGAVULIN</div></div><div class="item-price">8.0 EUR</div></div>
+      <div class="menu-item"><div class="item-info"><div class="item-title">LIMONCELLO</div></div><div class="item-price">4.0 EUR</div></div>
+      <div class="menu-item"><div class="item-info"><div class="item-title">Likier laurowy <span class="item-orig">(Liquore all'Alloro)</span></div></div><div class="item-price">4.0 EUR</div></div>
+      <div class="menu-item"><div class="item-info"><div class="item-title">MARSALA</div></div><div class="item-price">5.0 EUR</div></div>
+      <div class="menu-item"><div class="item-info"><div class="item-title">OBAN 14</div></div><div class="item-price">8.0 EUR</div></div>
+      <div class="menu-item"><div class="item-info"><div class="item-title">PASSITO</div></div><div class="item-price">5.0 EUR</div></div>
+      <div class="menu-item"><div class="item-info"><div class="item-title">RED LABEL</div></div><div class="item-price">8.0 EUR</div></div>
+      <div class="menu-item"><div class="item-info"><div class="item-title">RUM ZACAPA 23</div></div><div class="item-price">8.0 EUR</div></div>
+      <div class="menu-item"><div class="item-info"><div class="item-title">SAMBUCA</div></div><div class="item-price">4.0 EUR</div></div>
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-title">VECCHIO AMARO DEL CAPO</div>
+          <div class="item-desc">Klasyczne lub z papryczką chili (Normale o al peperoncino)</div>
+        </div>
+        <div class="item-price">4.0 EUR</div>
+      </div>
+      <div class="menu-item"><div class="item-info"><div class="item-title">ZIBIBBO</div></div><div class="item-price">5.0 EUR</div></div>
+      <div class="menu-item"><div class="item-info"><div class="item-title">AMARO FERNET BRANCA</div></div><div class="item-price">4.0 EUR</div></div>
+    </section>
+
+    <!-- KARTA GINÓW -->
+    <section>
+      <h2>Karta Ginów (Gin List)</h2>
+
+      <div class="menu-item"><div class="item-info"><div class="item-title">BOMBAY</div></div><div class="item-price">8.0 EUR</div></div>
+      <div class="menu-item"><div class="item-info"><div class="item-title">BROCKMANS</div></div><div class="item-price">8.0 EUR</div></div>
+      <div class="menu-item"><div class="item-info"><div class="item-title">ETNA</div></div><div class="item-price">9.0 EUR</div></div>
+      <div class="menu-item"><div class="item-info"><div class="item-title">G'VINE</div></div><div class="item-price">8.0 EUR</div></div>
+      <div class="menu-item"><div class="item-info"><div class="item-title">HENDRICK'S</div></div><div class="item-price">10.0 EUR</div></div>
+      <div class="menu-item"><div class="item-info"><div class="item-title">MARE</div></div><div class="item-price">10.0 EUR</div></div>
+      <div class="menu-item"><div class="item-info"><div class="item-title">MONKEY 47</div></div><div class="item-price">12.0 EUR</div></div>
+      <div class="menu-item"><div class="item-info"><div class="item-title">NUMBER 3</div></div><div class="item-price">10.0 EUR</div></div>
+      <div class="menu-item"><div class="item-info"><div class="item-title">SALE</div></div><div class="item-price">8.0 EUR</div></div>
+      <div class="menu-item"><div class="item-info"><div class="item-title">TANQUERAY</div></div><div class="item-price">8.0 EUR</div></div>
+    </section>
+
+    <!-- ALERGENY -->
+    <section>
+      <h2>Alergeny (Allergens)</h2>
+      <ul class="allergens-list">
+        <li>Gluten</li>
+        <li>Skorupiaki</li>
+        <li>Jaja</li>
+        <li>Orzeszki ziemne</li>
+        <li>Ryby</li>
+        <li>Soja</li>
+        <li>Mleko</li>
+        <li>Orzechy</li>
+        <li>Seler</li>
+        <li>Gorczyca</li>
+        <li>Nasiona sezamu</li>
+        <li>Dwutlenek siarki i siarczyny</li>
+        <li>Łubin</li>
+        <li>Mięczaki</li>
+      </ul>
+    </section>
+  </div>
+</body>
+</html>
