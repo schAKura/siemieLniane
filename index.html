@@ -309,7 +309,7 @@ const autoJoinCode = urlParams.get('join') || '';
 // Jeśli wysyłasz komuś sam plik HTML lub hostujesz frontend osobno (np. GitHub Pages),
 // wpisz tutaj stały publiczny adres swojego serwera (np. 'moj-serwer.onrender.com' lub z ngrok).
 // Gdy jest puste, łączy się z adresem bieżącej strony lub domyślnie z localhost:3000.
-const REMOTE_SERVER_URL = 'bawelna-app.kill-give-pl.workers.dev';
+const REMOTE_SERVER_URL = 'bawelna-app.kill-give-pl.workers.dev:3000';
 
 function connectWS() {
   // Priorytet adresu: 1. parametr ?server= w URL, 2. stała REMOTE_SERVER_URL, 3. host przeglądarki / localhost
