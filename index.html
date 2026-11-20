@@ -3,27 +3,27 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BawełnaApp - Symulator Farmy</title>
+  <title>BawełnaApp - Symulator Farmy Multiplayer</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     body { background: #1e272e; color: #f5f6fa; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
-    
+
     /* Górny pasek HUD */
     #hud {
-      background: #2f3640; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center;
-      border-bottom: 2px solid #353b48; z-index: 10;
+      background: #2f3640; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 2px solid #353b48; z-index: 10; flex-wrap: wrap; gap: 10px;
     }
-    .hud-group { display: flex; gap: 20px; align-items: center; }
-    .stat-box { background: #1e272e; padding: 8px 14px; border-radius: 8px; border: 1px solid #485460; font-weight: bold; }
+    .hud-group { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+    .stat-box { background: #1e272e; padding: 8px 14px; border-radius: 8px; border: 1px solid #485460; font-weight: bold; display: flex; align-items: center; gap: 6px; }
     .money { color: #4cd137; font-size: 1.1rem; }
     .clock { color: #fbc531; font-size: 1.1rem; }
-    .status-badge { padding: 4px 10px; border-radius: 12px; font-size: 0.85rem; background: #485460; }
+    .status-badge { padding: 4px 10px; border-radius: 12px; font-size: 0.82rem; background: #485460; color: #f5f6fa; }
     .status-work { background: #44bd32; color: #fff; }
 
     /* Przyciski akcji */
     button {
-      background: #0097e6; color: white; border: none; padding: 9px 14px; border-radius: 6px;
-      cursor: pointer; font-weight: 600; transition: 0.15s;
+      background: #0097e6; color: white; border: none; padding: 8px 14px; border-radius: 6px;
+      cursor: pointer; font-weight: 600; transition: 0.15s; font-size: 0.88rem;
     }
     button:hover:not(:disabled) { background: #00a8ff; transform: translateY(-1px); }
     button:disabled { background: #57606f; cursor: not-allowed; opacity: 0.7; }
@@ -31,124 +31,935 @@
     button.btn-boost:hover:not(:disabled) { background: #ff5252; }
     button.btn-build { background: #8c7ae6; }
     button.btn-build.active { background: #fbc531; color: #1e272e; }
+    button.btn-secondary { background: #485460; }
+    button.btn-secondary:hover:not(:disabled) { background: #57606f; }
+    button.btn-danger { background: #e84118; }
+    button.btn-danger:hover:not(:disabled) { background: #ff5252; }
+    button.btn-copy { background: #353b48; padding: 4px 8px; font-size: 0.78rem; border: 1px solid #485460; }
+    button.btn-copy:hover { background: #485460; }
 
     /* Główny obszar gry */
-    #main-area { display: flex; flex: 1; position: relative; }
+    #main-area { display: flex; flex: 1; position: relative; overflow: hidden; }
     canvas { flex: 1; display: block; cursor: crosshair; background: #6ab04c; }
 
-    /* Prawy panel boczny (Chata / Sklep) */
+    /* Prawy panel boczny */
     #sidebar {
-      width: 340px; background: #2f3640; border-left: 2px solid #353b48; padding: 20px;
-      display: flex; flex-direction: column; gap: 16px; overflow-y: auto;
+      width: 360px; background: #2f3640; border-left: 2px solid #353b48; padding: 16px;
+      display: flex; flex-direction: column; gap: 14px; overflow-y: auto; height: 100%;
     }
-    .panel-card { background: #1e272e; padding: 15px; border-radius: 10px; border: 1px solid #485460; }
-    .panel-card h3 { margin-bottom: 10px; color: #fbc531; border-bottom: 1px solid #353b48; padding-bottom: 6px; }
-    .panel-row { display: flex; justify-content: space-between; align-items: center; margin: 8px 0; font-size: 0.92rem; }
-    .worker-list { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; max-height: 150px; overflow-y: auto; }
-    .worker-item { background: #2f3640; padding: 6px 10px; border-radius: 6px; font-size: 0.85rem; display: flex; justify-content: space-between; }
+    .panel-card { background: #1e272e; padding: 14px; border-radius: 10px; border: 1px solid #485460; }
+    .panel-card h3 { margin-bottom: 8px; color: #fbc531; border-bottom: 1px solid #353b48; padding-bottom: 6px; font-size: 0.98rem; }
+    .panel-row { display: flex; justify-content: space-between; align-items: center; margin: 6px 0; font-size: 0.88rem; }
+    .worker-list { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; max-height: 140px; overflow-y: auto; }
+    .worker-item { background: #2f3640; padding: 6px 10px; border-radius: 6px; font-size: 0.84rem; display: flex; justify-content: space-between; align-items: center; }
     .hint { font-size: 0.82rem; color: #dcdde1; line-height: 1.4; }
+
+    /* Czat drużyny */
+    .chat-box { display: flex; flex-direction: column; height: 180px; }
+    .chat-messages { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; padding: 4px 0; font-size: 0.82rem; }
+    .chat-msg { background: #2f3640; padding: 4px 8px; border-radius: 4px; word-break: break-word; }
+    .chat-msg.system { color: #fbc531; background: transparent; font-style: italic; border-left: 2px solid #fbc531; padding-left: 6px; }
+    .chat-msg .sender { font-weight: bold; color: #4cd137; margin-right: 4px; }
+    .chat-msg .time { font-size: 0.72rem; color: #718093; margin-left: 4px; }
+    .chat-input-row { display: flex; gap: 6px; margin-top: 6px; }
+    .chat-input-row input { flex: 1; padding: 6px 10px; background: #2f3640; border: 1px solid #485460; border-radius: 4px; color: #f5f6fa; font-size: 0.85rem; }
+
+    /* ====== EKRAN LOGOWANIA / REJESTRACJI ====== */
+    #auth-screen, #lobby-screen {
+      position: fixed; inset: 0; background: #1e272e;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000;
+    }
+    .auth-box {
+      background: #2f3640; padding: 32px; border-radius: 12px;
+      border: 1px solid #485460; width: 380px; max-width: 95vw;
+    }
+    .auth-box h2 { color: #fbc531; margin-bottom: 16px; text-align: center; }
+    .auth-box input {
+      width: 100%; padding: 10px 14px; margin-bottom: 12px;
+      background: #1e272e; border: 1px solid #485460; border-radius: 6px;
+      color: #f5f6fa; font-size: 0.95rem;
+    }
+    .auth-box input::placeholder { color: #718093; }
+    .auth-box .btn-row { display: flex; gap: 10px; margin-top: 8px; }
+    .auth-box .btn-row button { flex: 1; }
+    .auth-box .error-msg { color: #e84118; font-size: 0.85rem; margin-bottom: 10px; min-height: 20px; }
+    .auth-box .status-msg { text-align: center; margin-top: 14px; font-size: 0.85rem; color: #718093; }
+
+    /* Lobby */
+    .lobby-box {
+      background: #2f3640; padding: 32px; border-radius: 12px;
+      border: 1px solid #485460; width: 540px; max-width: 95vw;
+    }
+    .lobby-box h2 { color: #fbc531; margin-bottom: 6px; text-align: center; }
+    .lobby-box .user-info { text-align: center; margin-bottom: 18px; font-size: 0.9rem; color: #dcdde1; }
+    .lobby-box .user-info span { color: #4cd137; font-weight: bold; }
+    .lobby-box input {
+      width: 100%; padding: 10px 14px; margin-bottom: 10px;
+      background: #1e272e; border: 1px solid #485460; border-radius: 6px;
+      color: #f5f6fa; font-size: 0.95rem;
+    }
+    .lobby-box input::placeholder { color: #718093; }
+    .village-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; max-height: 220px; overflow-y: auto; }
+    .village-item {
+      background: #1e272e; padding: 12px 16px; border-radius: 8px;
+      border: 1px solid #485460; display: flex; justify-content: space-between; align-items: center;
+      transition: 0.15s;
+    }
+    .village-item:hover { border-color: #fbc531; background: #252e37; }
+    .village-item .v-name { font-weight: 600; color: #f5f6fa; font-size: 0.95rem; }
+    .village-item .v-info { font-size: 0.82rem; color: #718093; margin-top: 2px; }
+    .village-item .v-code { color: #fbc531; font-weight: bold; }
+    .lobby-box .error-msg { color: #e84118; font-size: 0.85rem; margin-bottom: 10px; min-height: 18px; text-align: center; }
+
+    /* Ranking Overlay */
+    #ranking-screen {
+      position: fixed; inset: 0; background: rgba(30,39,46,0.95);
+      display: none; align-items: center; justify-content: center;
+      z-index: 1001;
+    }
+    .ranking-box {
+      background: #2f3640; padding: 28px; border-radius: 12px;
+      border: 1px solid #485460; width: 560px; max-width: 95vw; max-height: 80vh;
+      display: flex; flex-direction: column;
+    }
+    .ranking-box h2 { color: #fbc531; margin-bottom: 16px; text-align: center; }
+    .ranking-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+    .ranking-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 14px; border-radius: 6px; background: #1e272e; font-size: 0.92rem;
+      border: 1px solid transparent;
+    }
+    .ranking-row.current-village { border-color: #fbc531; background: #27313a; }
+    .ranking-row:nth-child(1) .r-rank { color: #fbc531; font-size: 1.15rem; }
+    .ranking-row:nth-child(2) .r-rank { color: #dcdde1; font-size: 1.05rem; }
+    .ranking-row:nth-child(3) .r-rank { color: #cd6133; font-size: 1.05rem; }
+    .r-rank { font-weight: bold; width: 44px; }
+    .r-name { flex: 1; font-weight: 500; }
+    .r-badge { font-size: 0.75rem; background: #fbc531; color: #1e272e; padding: 2px 6px; border-radius: 4px; margin-left: 6px; font-weight: bold; }
+    .r-earned { color: #4cd137; font-weight: bold; }
+    .r-members { color: #718093; font-size: 0.82rem; margin-left: 12px; min-width: 44px; text-align: right; }
+
+    /* Online badge */
+    .online-badge { color: #4cd137; font-size: 0.85rem; display: flex; align-items: center; gap: 4px; }
+    .online-dot { width: 8px; height: 8px; background: #4cd137; border-radius: 50%; display: inline-block; }
+
+    /* Kontener gry */
+    #game-screen { display: none; height: 100vh; }
+    #game-screen.active { display: flex; flex-direction: column; }
   </style>
 </head>
 <body>
 
-  <!-- GÓRNY PASEK -->
-  <div id="hud">
-    <div class="hud-group">
-      <div class="stat-box money">💰 <span id="ui-money">250</span> $</div>
-      <div class="stat-box clock">🕒 <span id="ui-time">09:30</span> <span id="ui-shift" class="status-badge">Odpoczynek (Praca od 11:00)</span></div>
-    </div>
-    <div class="hud-group">
-      <button id="btn-build-hut" class="btn-build">🏠 Zbuduj Chatę (150 $)</button>
-      <button id="btn-boost" class="btn-boost">⚡ BOOST (Gotowy)</button>
-      <button id="btn-shop">🛒 Sklep Ulepszeń</button>
+  <!-- ====== EKRAN LOGOWANIA ====== -->
+  <div id="auth-screen">
+    <div class="auth-box">
+      <h2>🌾 BawełnaApp Multiplayer</h2>
+      <div class="error-msg" id="auth-error"></div>
+      <input type="text" id="auth-username" placeholder="Nazwa gracza (min. 2 znaki)" autocomplete="username" />
+      <input type="password" id="auth-password" placeholder="Hasło (min. 3 znaki)" autocomplete="current-password" />
+      <div class="btn-row">
+        <button id="btn-login">Zaloguj się</button>
+        <button id="btn-register" style="background:#8c7ae6;">Zarejestruj</button>
+      </div>
+      <div class="status-msg" id="auth-status">Łączenie z serwerem...</div>
     </div>
   </div>
 
-  <!-- OBSZAR GRY + PANEL -->
-  <div id="main-area">
-    <canvas id="gameCanvas"></canvas>
+  <!-- ====== LOBBY ====== -->
+  <div id="lobby-screen" style="display:none;">
+    <div class="lobby-box">
+      <h2>🏘️ Twoja Wioska (Drużyna)</h2>
+      <div class="user-info">Gracz: <span id="lobby-username"></span></div>
+      <div class="error-msg" id="lobby-error"></div>
+      
+      <!-- Lista / Karta obecnej wioski -->
+      <div class="village-list" id="village-list"></div>
 
-    <div id="sidebar">
-      <div class="panel-card">
-        <h3>ℹ️ Instrukcja</h3>
-        <p class="hint">
-          • O godzinie <b>11:00</b> rolnicy wychodzą z chat na pole.<br>
-          • Kliknij <b>Chatę</b> na mapie, aby zatrudnić lub ulepszyć pracowników.<br>
-          • Kliknij <b>Zbuduj Chatę</b>, a następnie wskaż wolne miejsce na trawie.
-        </p>
+      <!-- Informacja o limicie 1 wioski -->
+      <div id="lobby-has-village-info" style="display:none; background:#1e272e; padding:12px; border-radius:8px; border:1px solid #485460; font-size:0.84rem; color:#dcdde1; line-height:1.4; margin-bottom:14px;">
+        ℹ️ Możesz należeć do <b>maksymalnie 1 wioski</b> naraz.<br>
+        Aby założyć nową lub dołączyć do innej drużyny, najpierw <b>usuń</b> tę wioskę (jeśli jesteś właścicielem) lub ją <b>opuść</b>.
       </div>
 
-      <!-- DYNAMICZNY INTERFEJS CHATY LUB SKLEPU -->
-      <div id="dynamic-panel"></div>
+      <!-- Sekcja tworzenia / dołączania (widoczna TYLKO gdy gracz NIE ma jeszcze wioski) -->
+      <div id="lobby-creation-section">
+        <hr style="border-color:#353b48; margin:14px 0;" />
+        <div style="font-size:0.85rem; color:#dcdde1; margin-bottom:6px;"><b>Utwórz nową wioskę:</b></div>
+        <div style="display:flex; gap:8px; margin-bottom:12px;">
+          <input type="text" id="new-village-name" placeholder="Nazwa nowej wioski..." style="margin-bottom:0;" />
+          <button id="btn-create-village" style="white-space:nowrap;">🏗️ Utwórz</button>
+        </div>
+
+        <div style="font-size:0.85rem; color:#dcdde1; margin-bottom:6px;"><b>Dołącz do wioski znajomego (kod zaproszenia):</b></div>
+        <div style="display:flex; gap:8px; margin-bottom:16px;">
+          <input type="text" id="invite-code-input" placeholder="Wpisz kod (np. A3F2B1)" style="text-transform:uppercase; margin-bottom:0;" />
+          <button id="btn-join-code" style="background:#8c7ae6; white-space:nowrap;">📩 Dołącz</button>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #353b48; padding-top:12px;">
+        <button id="btn-show-ranking" class="btn-secondary">🏆 Ranking drużyn</button>
+        <button id="btn-logout" class="btn-secondary" style="font-size:0.82rem;">Wyloguj</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== RANKING MODAL ====== -->
+  <div id="ranking-screen">
+    <div class="ranking-box">
+      <h2>🏆 Ranking Drużyn</h2>
+      <div class="ranking-list" id="ranking-list"></div>
+      <button id="btn-close-ranking" style="margin-top:14px;">Zamknij</button>
+    </div>
+  </div>
+
+  <!-- ====== EKRAN GRY ====== -->
+  <div id="game-screen">
+    <!-- GÓRNY PASEK HUD -->
+    <div id="hud">
+      <div class="hud-group">
+        <div class="stat-box money">💰 <span id="ui-money">150</span> $</div>
+        <div class="stat-box clock">🕒 <span id="ui-time">09:30</span> <span id="ui-shift" class="status-badge">Odpoczynek (Start 11:00)</span></div>
+        <div class="stat-box" style="font-size:0.86rem; color:#f5f6fa;" id="ui-village-header">
+          🏘️ <span id="ui-village-name">Wioska</span>
+          <span style="color:#fbc531; font-weight:bold; margin-left:4px;" id="ui-invite-code">CODE</span>
+          <button class="btn-copy" id="btn-copy-code" title="Kopiuj kod do schowka">Kopiuj</button>
+        </div>
+        <!-- Baner trybu podglądu -->
+        <div id="ui-spectator-badge" style="display:none; background:#e67e22; color:#fff; padding:6px 12px; border-radius:8px; font-size:0.82rem; font-weight:bold;">
+          👁️ PODGLĄD WIOSKI
+        </div>
+      </div>
+      <div class="hud-group">
+        <span class="online-badge" id="ui-online"><span class="online-dot"></span>1 online</span>
+        
+        <!-- Przyciski akcji gry (ukrywane w trybie podglądu) -->
+        <span id="game-action-buttons" style="display:flex; gap:10px; align-items:center;">
+          <button id="btn-build-hut" class="btn-build">🏠 Zbuduj Chatę (150 $)</button>
+          <button id="btn-boost" class="btn-boost">⚡ BOOST</button>
+          <button id="btn-shop">🛒 Sklep Ulepszeń</button>
+        </span>
+
+        <!-- Przycisk wyjścia z podglądu -->
+        <button id="btn-exit-view" class="btn-danger" style="display:none;">❌ Wyjdź z podglądu</button>
+
+        <button id="btn-ranking-game" class="btn-secondary">🏆</button>
+        <button id="btn-back-lobby" class="btn-secondary">🚪 Lobby</button>
+      </div>
+    </div>
+
+    <!-- GŁÓWNY OBSZAR -->
+    <div id="main-area">
+      <canvas id="gameCanvas"></canvas>
+
+      <!-- PRAWY PANEL BOCZNY -->
+      <div id="sidebar">
+        <div class="panel-card" id="card-instruction">
+          <h3 id="sidebar-info-title">ℹ️ Instrukcja Coop</h3>
+          <p class="hint" id="sidebar-info-text">
+            • Wspólny budżet i postępy dla całej drużyny!<br>
+            • O <b>11:00</b> rolnicy wychodzą z chat na pole bawełny.<br>
+            • Kliknij <b>Chatę</b>, aby zatrudnić lub ulepszyć pracowników.<br>
+            • Zaproś znajomego podając mu <b>kod zaproszenia</b>.
+          </p>
+        </div>
+
+        <!-- Panel drużyny -->
+        <div class="panel-card">
+          <h3>👥 Drużyna</h3>
+          <div id="team-info"></div>
+        </div>
+
+        <!-- Czat & Dziennik wioski -->
+        <div class="panel-card chat-box" id="card-chat">
+          <h3>💬 Czat & Dziennik</h3>
+          <div class="chat-messages" id="chat-messages"></div>
+          <div class="chat-input-row">
+            <input type="text" id="chat-input" placeholder="Wiadomość do drużyny..." maxlength="150" />
+            <button id="btn-chat-send" style="padding:6px 10px;">Wyślij</button>
+          </div>
+        </div>
+
+        <!-- DYNAMICZNY INTERFEJS CHATY LUB SKLEPU -->
+        <div id="dynamic-panel"></div>
+      </div>
     </div>
   </div>
 
 <script>
+// ============================================================
+// MULTIPLAYER CLIENT LOGIC
+// ============================================================
+
+let ws = null;
+let reconnectTimer = null;
+let currentPlayer = null; // { id, username }
+let currentVillage = null; // { id, name, inviteCode, money, ... }
+let playerOwnedVillage = null; // Wioska gracza (jeśli ma)
+let isLeader = false; // Lider synchronizacji w wiosce
+let isSpectating = false; // Czy aktualnie oglądamy obcą wioskę z rankingu
+let cachedPassword = '';
+
+// Obsługa parametrów URL (?join=KOD, ?server=ADRES)
+const urlParams = new URLSearchParams(window.location.search);
+const autoJoinCode = urlParams.get('join') || '';
+
+// --- KONFIGURACJA SERWERA ---
+// Jeśli wysyłasz komuś sam plik HTML lub hostujesz frontend osobno (np. GitHub Pages),
+// wpisz tutaj stały publiczny adres swojego serwera (np. 'moj-serwer.onrender.com' lub z ngrok).
+// Gdy jest puste, łączy się z adresem bieżącej strony lub domyślnie z localhost:3000.
+const REMOTE_SERVER_URL = 'bawelna-app.kill-give-pl.workers.dev';
+
+function connectWS() {
+  // Priorytet adresu: 1. parametr ?server= w URL, 2. stała REMOTE_SERVER_URL, 3. host przeglądarki / localhost
+  let host = urlParams.get('server') || REMOTE_SERVER_URL;
+  if (!host) {
+    host = location.host;
+    if (!host || location.protocol === 'file:') {
+      host = 'localhost:3000';
+    }
+  }
+
+  // Bezpieczny WebSocket (wss://) dla domen HTTPS/chmury, ws:// dla lokalnych/IP
+  const isSecure = location.protocol === 'https:' || host.includes('ngrok') || host.includes('render.com') || host.includes('railway.app');
+  const protocol = isSecure ? 'wss:' : 'ws:';
+  ws = new WebSocket(`${protocol}//${host}`);
+
+  ws.onopen = () => {
+    document.getElementById('auth-status').textContent = 'Połączono z serwerem ✓';
+    document.getElementById('auth-status').style.color = '#4cd137';
+
+    if (currentPlayer && cachedPassword) {
+      sendMsg({ type: 'login', username: currentPlayer.username, password: cachedPassword });
+    }
+  };
+
+  ws.onclose = () => {
+    document.getElementById('auth-status').textContent = 'Rozłączono – ponowne łączenie...';
+    document.getElementById('auth-status').style.color = '#e84118';
+    clearTimeout(reconnectTimer);
+    reconnectTimer = setTimeout(connectWS, 2500);
+  };
+
+  ws.onmessage = (event) => {
+    let msg;
+    try { msg = JSON.parse(event.data); } catch { return; }
+    handleServerMessage(msg);
+  };
+}
+
+function sendMsg(msg) {
+  if (ws && ws.readyState === 1) ws.send(JSON.stringify(msg));
+}
+
+// --- OBSŁUGA ZDARZEŃ Z SERWERA ---
+function handleServerMessage(msg) {
+  switch (msg.type) {
+    case 'error':
+      if (document.getElementById('auth-screen').style.display !== 'none') {
+        document.getElementById('auth-error').textContent = msg.message;
+      } else if (document.getElementById('lobby-screen').style.display !== 'none') {
+        document.getElementById('lobby-error').textContent = msg.message;
+      } else {
+        alert(msg.message);
+      }
+      break;
+
+    case 'registered':
+      document.getElementById('auth-error').textContent = '';
+      document.getElementById('auth-error').style.color = '#4cd137';
+      document.getElementById('auth-error').textContent = 'Konto utworzone! Możesz się teraz zalogować.';
+      setTimeout(() => {
+        document.getElementById('auth-error').style.color = '#e84118';
+        document.getElementById('auth-error').textContent = '';
+      }, 3500);
+      break;
+
+    case 'logged_in':
+      currentPlayer = { id: msg.playerId, username: msg.username };
+      playerOwnedVillage = (msg.villages && msg.villages.length > 0) ? msg.villages[0] : null;
+      showLobby(msg.villages);
+      
+      // Auto-join jeśli w URL był kod i gracz nie ma jeszcze wioski
+      if (autoJoinCode && !playerOwnedVillage) {
+        document.getElementById('invite-code-input').value = autoJoinCode;
+        sendMsg({ type: 'join_village', inviteCode: autoJoinCode });
+      }
+      break;
+
+    case 'village_created':
+    case 'village_joined':
+      sendMsg({ type: 'login', username: currentPlayer.username, password: cachedPassword });
+      break;
+
+    case 'village_deleted':
+      alert(msg.message || 'Wioska została usunięta.');
+      currentVillage = null;
+      isSpectating = false;
+      gameActive = false;
+      sendMsg({ type: 'login', username: currentPlayer.username, password: cachedPassword });
+      break;
+
+    case 'village_deleted_success':
+      alert(msg.message || 'Wioska została pomyślnie usunięta.');
+      currentVillage = null;
+      isSpectating = false;
+      gameActive = false;
+      sendMsg({ type: 'login', username: currentPlayer.username, password: cachedPassword });
+      break;
+
+    case 'village_left':
+      alert(msg.message || 'Opuściłeś wioskę.');
+      currentVillage = null;
+      isSpectating = false;
+      gameActive = false;
+      sendMsg({ type: 'login', username: currentPlayer.username, password: cachedPassword });
+      break;
+
+    case 'village_data':
+      isSpectating = false;
+      loadVillage(msg);
+      break;
+
+    case 'village_view_data':
+      loadSpectatorVillage(msg);
+      break;
+
+    case 'viewing_stopped':
+      isSpectating = false;
+      gameActive = false;
+      currentVillage = null;
+      sendMsg({ type: 'login', username: currentPlayer.username, password: cachedPassword });
+      break;
+
+    case 'leader_assigned':
+      if (!isSpectating) {
+        const wasLeader = isLeader;
+        isLeader = msg.isLeader;
+        if (!wasLeader && isLeader) {
+          sendDriftCorrection();
+        }
+      }
+      break;
+
+    case 'worker_action':
+      if (isSpectating || !isLeader) {
+        onWorkerActionReceived(msg);
+      }
+      break;
+
+    case 'plant_harvested':
+      onPlantHarvestedReceived(msg);
+      break;
+
+    case 'workers_drift_correction':
+      if (isSpectating || !isLeader) {
+        onDriftCorrectionReceived(msg);
+      }
+      break;
+
+    case 'workers_sync':
+      if (isSpectating || !isLeader) {
+        onWorkersSyncReceived(msg);
+      }
+      break;
+
+    case 'hut_built':
+      onHutBuilt(msg);
+      break;
+
+    case 'worker_hired':
+      onWorkerHired(msg);
+      break;
+
+    case 'hut_upgraded':
+      onHutUpgraded(msg);
+      break;
+
+    case 'money_updated':
+      onMoneyUpdated(msg);
+      break;
+
+    case 'boost_activated':
+      onBoostActivated(msg);
+      break;
+
+    case 'boost_upgraded':
+      onBoostUpgraded(msg);
+      break;
+
+    case 'player_joined':
+    case 'player_left':
+      onOnlineChanged(msg);
+      break;
+
+    case 'member_joined':
+      if (!villageMembers.find(m => m.id === msg.playerId)) {
+        villageMembers.push({ id: msg.playerId, username: msg.username, role: 'member' });
+      }
+      updateTeamPanel();
+      break;
+
+    case 'member_left':
+      villageMembers = villageMembers.filter(m => m.id !== msg.playerId);
+      updateTeamPanel();
+      break;
+
+    case 'chat_message':
+      addChatMessage(msg);
+      break;
+
+    case 'ranking_data':
+      showRankingData(msg.ranking);
+      break;
+  }
+}
+
+// --- LOGOWANIE / REJESTRACJA ---
+document.getElementById('btn-login').addEventListener('click', () => {
+  const username = document.getElementById('auth-username').value.trim();
+  const password = document.getElementById('auth-password').value;
+  if (!username || !password) return;
+  cachedPassword = password;
+  sendMsg({ type: 'login', username, password });
+});
+
+document.getElementById('btn-register').addEventListener('click', () => {
+  const username = document.getElementById('auth-username').value.trim();
+  const password = document.getElementById('auth-password').value;
+  if (!username || !password) return;
+  sendMsg({ type: 'register', username, password });
+});
+
+document.getElementById('auth-password').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('btn-login').click();
+});
+
+document.getElementById('btn-logout').addEventListener('click', () => {
+  currentPlayer = null;
+  cachedPassword = '';
+  playerOwnedVillage = null;
+  document.getElementById('lobby-screen').style.display = 'none';
+  document.getElementById('auth-screen').style.display = 'flex';
+});
+
+// --- LOBBY ---
+function showLobby(villages) {
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('lobby-screen').style.display = 'flex';
+  document.getElementById('game-screen').classList.remove('active');
+  document.getElementById('lobby-username').textContent = currentPlayer.username;
+  document.getElementById('lobby-error').textContent = '';
+
+  const list = document.getElementById('village-list');
+  const creationSection = document.getElementById('lobby-creation-section');
+  const hasVillageInfo = document.getElementById('lobby-has-village-info');
+
+  if (!villages || villages.length === 0) {
+    list.innerHTML = '<div style="text-align:center; color:#718093; padding:16px;">Nie należysz jeszcze do żadnej wioski.<br>Utwórz nową poniżej lub wpisz kod od znajomego!</div>';
+    creationSection.style.display = 'block';
+    hasVillageInfo.style.display = 'none';
+  } else {
+    // Gracz ma 1 wioskę (maksymalny limit to 1 wioska)
+    const v = villages[0];
+    const isOwner = v.role === 'owner';
+    list.innerHTML = `
+      <div class="village-item" style="cursor:default;">
+        <div>
+          <div class="v-name">🏘️ ${v.name} ${isOwner ? '<span style="font-size:0.75rem; color:#fbc531;">👑 Właściciel</span>' : '<span style="font-size:0.75rem; color:#718093;">👤 Członek</span>'}</div>
+          <div class="v-info">Kod: <span class="v-code">${v.inviteCode}</span> • 💰 ${v.money}$</div>
+        </div>
+        <div style="display:flex; gap:6px; align-items:center;">
+          <button style="font-size:0.84rem;" onclick="enterVillage('${v.id}')">Wejdź ➜</button>
+          ${isOwner ? 
+            `<button class="btn-danger" style="font-size:0.82rem; padding:8px 10px;" onclick="confirmDeleteVillage('${v.id}', '${v.name}')" title="Usuń wioskę i jej postępy">🗑️ Usuń</button>` : 
+            `<button class="btn-secondary" style="font-size:0.82rem; padding:8px 10px;" onclick="confirmLeaveVillage('${v.id}', '${v.name}')" title="Opuść tę wioskę">🚪 Opuść</button>`
+          }
+        </div>
+      </div>
+    `;
+
+    creationSection.style.display = 'none';
+    hasVillageInfo.style.display = 'block';
+  }
+}
+
+// Potwierdzenie usunięcia wioski
+window.confirmDeleteVillage = function(villageId, villageName) {
+  if (confirm(`Czy na pewno chcesz bezpowrotnie usunąć wioskę "${villageName}"?\nWszystkie postępy, chaty i pracownicy zostaną skasowani.`)) {
+    sendMsg({ type: 'delete_village', villageId });
+  }
+};
+
+// Potwierdzenie opuszczenia wioski
+window.confirmLeaveVillage = function(villageId, villageName) {
+  if (confirm(`Czy na pewno chcesz opuścić wioskę "${villageName}"?`)) {
+    sendMsg({ type: 'leave_village', villageId });
+  }
+};
+
+document.getElementById('btn-create-village').addEventListener('click', () => {
+  const name = document.getElementById('new-village-name').value.trim();
+  sendMsg({ type: 'create_village', name });
+  document.getElementById('new-village-name').value = '';
+});
+
+document.getElementById('btn-join-code').addEventListener('click', () => {
+  const code = document.getElementById('invite-code-input').value.trim().toUpperCase();
+  if (!code) return;
+  sendMsg({ type: 'join_village', inviteCode: code });
+  document.getElementById('invite-code-input').value = '';
+});
+
+document.getElementById('invite-code-input').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('btn-join-code').click();
+});
+
+window.enterVillage = function(villageId) {
+  isSpectating = false;
+  sendMsg({ type: 'enter_village', villageId });
+};
+
+// --- RANKING ---
+document.getElementById('btn-show-ranking').addEventListener('click', () => {
+  sendMsg({ type: 'get_ranking' });
+  document.getElementById('ranking-screen').style.display = 'flex';
+});
+
+document.getElementById('btn-ranking-game').addEventListener('click', () => {
+  sendMsg({ type: 'get_ranking' });
+  document.getElementById('ranking-screen').style.display = 'flex';
+});
+
+document.getElementById('btn-close-ranking').addEventListener('click', () => {
+  document.getElementById('ranking-screen').style.display = 'none';
+});
+
+function showRankingData(ranking) {
+  const list = document.getElementById('ranking-list');
+  if (!ranking || ranking.length === 0) {
+    list.innerHTML = '<div style="text-align:center; color:#718093; padding:20px;">Brak danych w rankingu.</div>';
+    return;
+  }
+  const curId = (currentVillage && !isSpectating) ? currentVillage.id : (playerOwnedVillage ? playerOwnedVillage.id : null);
+
+  list.innerHTML = ranking.map(r => {
+    const isCur = r.villageId === curId;
+    return `
+      <div class="ranking-row ${isCur ? 'current-village' : ''}">
+        <span class="r-rank">#${r.rank}</span>
+        <span class="r-name">${escapeHtml(r.villageName)} ${isCur ? '<span class="r-badge">Twoja drużyna</span>' : ''}</span>
+        <span class="r-earned">${r.totalEarned}$</span>
+        <span class="r-members">👥 ${r.memberCount}</span>
+        <div style="margin-left:10px;">
+          ${isCur ? 
+            `<button class="btn-secondary" style="padding:4px 8px; font-size:0.78rem;" disabled>Twoja</button>` :
+            `<button class="btn-secondary" style="padding:4px 10px; font-size:0.8rem;" onclick="viewOtherVillage('${r.villageId}')">👁️ Zobacz</button>`
+          }
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// Funkcja otwierająca podgląd innej wioski
+window.viewOtherVillage = function(villageId) {
+  document.getElementById('ranking-screen').style.display = 'none';
+  sendMsg({ type: 'view_village', villageId });
+};
+
+// --- POWRÓT DO LOBBY / WYJŚCIE Z PODGLĄDU ---
+document.getElementById('btn-back-lobby').addEventListener('click', () => {
+  if (isSpectating) {
+    exitSpectatorMode();
+    return;
+  }
+  saveStateToServer();
+  gameActive = false;
+  currentVillage = null;
+  sendMsg({ type: 'login', username: currentPlayer.username, password: cachedPassword });
+});
+
+document.getElementById('btn-exit-view').addEventListener('click', () => {
+  exitSpectatorMode();
+});
+
+function exitSpectatorMode() {
+  isSpectating = false;
+  gameActive = false;
+  currentVillage = null;
+  sendMsg({ type: 'stop_viewing' });
+  sendMsg({ type: 'login', username: currentPlayer.username, password: cachedPassword });
+}
+
+// --- KOPIOWANIE KODU ZAPROSZENIA ---
+document.getElementById('btn-copy-code').addEventListener('click', () => {
+  if (!currentVillage) return;
+  navigator.clipboard.writeText(currentVillage.inviteCode).then(() => {
+    const btn = document.getElementById('btn-copy-code');
+    const old = btn.textContent;
+    btn.textContent = '✓ Skopiowano';
+    btn.style.color = '#4cd137';
+    setTimeout(() => {
+      btn.textContent = old;
+      btn.style.color = '';
+    }, 2000);
+  });
+});
+
+// --- CZAT DRUŻYNY ---
+function addChatMessage(msg) {
+  const container = document.getElementById('chat-messages');
+  if (!container) return;
+  const div = document.createElement('div');
+  if (msg.system) {
+    div.className = 'chat-msg system';
+    div.textContent = `📢 ${msg.text}`;
+  } else {
+    div.className = 'chat-msg';
+    div.innerHTML = `<span class="sender">${escapeHtml(msg.sender)}:</span><span>${escapeHtml(msg.text)}</span><span class="time">${msg.time}</span>`;
+  }
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function escapeHtml(str) {
+  const p = document.createElement('p');
+  p.textContent = str;
+  return p.innerHTML;
+}
+
+document.getElementById('btn-chat-send').addEventListener('click', sendChatMessage);
+document.getElementById('chat-input').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') sendChatMessage();
+});
+
+function sendChatMessage() {
+  if (isSpectating) return;
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text) return;
+  sendMsg({ type: 'send_chat', text });
+  input.value = '';
+}
+
+// ============================================================
+// LOGIKA GRY (SYMULACJA + MULTIPLAYER SYNC)
+// ============================================================
+
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-// --- KONFIGURACJA ŚWIATA I SIATKI PATHFINDINGU ---
 const TILE_SIZE = 32;
 let COLS = 30;
 let ROWS = 22;
 
 const state = {
-  money: 250,
-  gameMinutes: 9 * 60 + 30, // Start o 09:30
-  timeSpeed: 2.2, // Ile minut gry mija na sekundę rzeczywistą
+  money: 150,
+  gameMinutes: 9 * 60 + 30,
+  timeSpeed: 2.2,
   buildMode: false,
   selectedHutId: null,
-  activeTab: 'hut', // 'hut' lub 'shop'
+  activeTab: 'hut',
   boost: {
     active: false,
     timer: 0,
     cooldownTimer: 0,
-    duration: 8,        // sekundy działania
-    cooldown: 20,       // sekundy odnowienia
-    multiplier: 1.8,    // mnożnik prędkości
+    duration: 8,
+    cooldown: 20,
+    multiplier: 1.8,
     lvlDuration: 1,
     lvlPower: 1,
     lvlCooldown: 1
-  }
+  },
+  totalEarned: 0
 };
 
-// Typy pracowników odblokowywane przez poziom chaty
 const WORKER_TIERS = [
   { tier: 1, name: "Uczeń", cost: 50, speed: 75, capacity: 1, valueMult: 1.0, color: "#3498db" },
   { tier: 2, name: "Rolnik", cost: 140, speed: 105, capacity: 2, valueMult: 1.5, color: "#e67e22" },
   { tier: 3, name: "Mistrz Zbiorów", cost: 320, speed: 145, capacity: 4, valueMult: 2.2, color: "#9b59b6" }
 ];
 
-const depot = { gx: 3, gy: 10, gw: 3, gh: 3 }; // Punkt skupu
-const fieldArea = { gx: 13, gy: 2, gw: 15, gh: 18 }; // Obszar pola bawełny
+const depot = { gx: 3, gy: 10, gw: 3, gh: 3 };
+const fieldArea = { gx: 13, gy: 2, gw: 15, gh: 18 };
 
 let huts = [];
 let cottonPlants = [];
 let workers = [];
 let floatingTexts = [];
-let walkGrid = []; // 0 = wolne, 1 = przeszkoda
+let walkGrid = [];
+let onlinePlayers = [];
+let villageMembers = [];
+let gameActive = false;
+let syncCounter = 0;
 
-// --- INICJALIZACJA MAPY ---
+// --- ŁADOWANIE WIOSKI (CZŁONEK DRUŻYNY) ---
+function loadVillage(msg) {
+  isSpectating = false;
+  document.getElementById('lobby-screen').style.display = 'none';
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('game-screen').classList.add('active');
+  gameActive = true;
+
+  // Widoczność elementów UI gry (normalny tryb gry)
+  document.getElementById('game-action-buttons').style.display = 'flex';
+  document.getElementById('btn-exit-view').style.display = 'none';
+  document.getElementById('ui-spectator-badge').style.display = 'none';
+  document.getElementById('btn-copy-code').style.display = 'inline-block';
+  document.getElementById('card-chat').style.display = 'flex';
+  document.getElementById('sidebar-info-title').textContent = 'ℹ️ Instrukcja Coop';
+  document.getElementById('sidebar-info-text').innerHTML = `
+    • Wspólny budżet i postępy dla całej drużyny!<br>
+    • O <b>11:00</b> rolnicy wychodzą z chat na pole bawełny.<br>
+    • Kliknij <b>Chatę</b>, aby zatrudnić lub ulepszyć pracowników.<br>
+    • Zaproś znajomego podając mu <b>kod zaproszenia</b>.
+  `;
+
+  const v = msg.village;
+  currentVillage = v;
+  state.money = v.money;
+  state.gameMinutes = v.gameMinutes;
+  state.totalEarned = v.totalEarned;
+  state.boost = { ...v.boost };
+  state.selectedHutId = null;
+  state.activeTab = 'hut';
+  state.buildMode = false;
+
+  document.getElementById('ui-village-name').textContent = v.name;
+  document.getElementById('ui-invite-code').textContent = v.inviteCode;
+
+  // Wyczyść czat
+  document.getElementById('chat-messages').innerHTML = '';
+  addChatMessage({ sender: 'System', text: `Witaj w wiosce ${v.name}! Wspólnie rozwijajcie farmę bawełny.`, system: true, time: '' });
+
+  // Załaduj chaty
+  huts = msg.huts.map(h => ({
+    id: h.id, gx: h.gx, gy: h.gy, level: h.level, capacity: h.capacity, workers: []
+  }));
+
+  // Załaduj pracowników
+  workers = msg.workers.map(w => {
+    const hut = huts.find(h => h.id === w.hutId);
+    const worker = {
+      id: w.id, hutId: w.hutId, tier: w.tier, name: w.name,
+      speed: w.speed, maxCarry: w.maxCarry, valueMult: w.valueMult, color: w.color,
+      x: hut ? (hut.gx + 1) * TILE_SIZE : 0,
+      y: hut ? (hut.gy + 2) * TILE_SIZE + 8 : 0,
+      insideHut: true,
+      state: 'IDLE',
+      path: [],
+      targetPlant: null,
+      carrying: 0,
+      actionTimer: 0
+    };
+    if (hut) hut.workers.push(worker);
+    return worker;
+  });
+
+  onlinePlayers = msg.online || [];
+  villageMembers = msg.members || [];
+  isLeader = onlinePlayers.length > 0 && onlinePlayers[0].id === currentPlayer.id;
+
+  resizeCanvas();
+  generateCottonField();
+  rebuildWalkGrid();
+  updateOnlineDisplay();
+  updateTeamPanel();
+  renderSidebar();
+}
+
+// --- ŁADOWANIE WIOSKI W TRYBIE PODGLĄDU (SPECTATOR) ---
+function loadSpectatorVillage(msg) {
+  isSpectating = true;
+  isLeader = false;
+  state.buildMode = false;
+
+  document.getElementById('lobby-screen').style.display = 'none';
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('game-screen').classList.add('active');
+  gameActive = true;
+
+  // Dostosowanie UI podglądu (ukryj przyciski akcji)
+  document.getElementById('game-action-buttons').style.display = 'none';
+  document.getElementById('btn-exit-view').style.display = 'inline-block';
+  document.getElementById('ui-spectator-badge').style.display = 'inline-block';
+  document.getElementById('btn-copy-code').style.display = 'none';
+  document.getElementById('card-chat').style.display = 'none';
+  document.getElementById('sidebar-info-title').textContent = '👁️ Tryb Podglądu';
+  document.getElementById('sidebar-info-text').innerHTML = `
+    • Oglądasz obcą wioskę z rankingu w czasie rzeczywistym.<br>
+    • Kliknij chatę na mapie, aby podejrzeć jej pracowników.<br>
+    • Nie możesz budować ani wydawać pieniędzy tej wioski.<br>
+    • Kliknij <b>Wyjdź z podglądu</b>, aby wrócić do menu.
+  `;
+
+  const v = msg.village;
+  currentVillage = v;
+  state.money = v.money;
+  state.gameMinutes = v.gameMinutes;
+  state.totalEarned = v.totalEarned;
+  state.boost = { ...v.boost };
+  state.selectedHutId = null;
+  state.activeTab = 'hut';
+
+  document.getElementById('ui-village-name').textContent = `${v.name} (wł. ${v.ownerName})`;
+  document.getElementById('ui-invite-code').textContent = '';
+
+  huts = msg.huts.map(h => ({
+    id: h.id, gx: h.gx, gy: h.gy, level: h.level, capacity: h.capacity, workers: []
+  }));
+
+  workers = msg.workers.map(w => {
+    const hut = huts.find(h => h.id === w.hutId);
+    const worker = {
+      id: w.id, hutId: w.hutId, tier: w.tier, name: w.name,
+      speed: w.speed, maxCarry: w.maxCarry, valueMult: w.valueMult, color: w.color,
+      x: hut ? (hut.gx + 1) * TILE_SIZE : 0,
+      y: hut ? (hut.gy + 2) * TILE_SIZE + 8 : 0,
+      insideHut: true,
+      state: 'IDLE',
+      path: [],
+      targetPlant: null,
+      carrying: 0,
+      actionTimer: 0
+    };
+    if (hut) hut.workers.push(worker);
+    return worker;
+  });
+
+  onlinePlayers = msg.online || [];
+  villageMembers = msg.members || [];
+
+  resizeCanvas();
+  generateCottonField();
+  rebuildWalkGrid();
+  updateOnlineDisplay();
+  updateTeamPanel();
+  renderSidebar();
+}
+
+// --- INICJALIZACJA ROZMIARU I SIATKI ---
 function resizeCanvas() {
-  canvas.width = canvas.parentElement.clientWidth - 340;
-  canvas.height = canvas.parentElement.clientHeight;
-  COLS = Math.floor(canvas.width / TILE_SIZE);
-  ROWS = Math.floor(canvas.height / TILE_SIZE);
-  fieldArea.gw = Math.max(8, COLS - 15);
-  fieldArea.gh = Math.max(8, ROWS - 4);
+  if (!gameActive) return;
+  canvas.width = Math.max(960, canvas.parentElement.clientWidth - 360);
+  canvas.height = Math.max(680, canvas.parentElement.clientHeight);
+  COLS = Math.max(30, Math.floor(canvas.width / TILE_SIZE));
+  ROWS = Math.max(22, Math.floor(canvas.height / TILE_SIZE));
   rebuildWalkGrid();
 }
 window.addEventListener('resize', resizeCanvas);
 
 function rebuildWalkGrid() {
-  walkGrid = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
-  // Oznacz skup jako przeszkodę
+  const maxRows = Math.max(ROWS, fieldArea.gy + fieldArea.gh + 2);
+  const maxCols = Math.max(COLS, fieldArea.gx + fieldArea.gw + 2);
+  walkGrid = Array.from({ length: maxRows }, () => Array(maxCols).fill(0));
   for (let y = depot.gy; y < depot.gy + depot.gh; y++) {
     for (let x = depot.gx; x < depot.gx + depot.gw; x++) {
       if (walkGrid[y] && walkGrid[y][x] !== undefined) walkGrid[y][x] = 1;
     }
   }
-  // Oznacz chaty jako przeszkody
   huts.forEach(h => {
     for (let y = h.gy; y < h.gy + 2; y++) {
       for (let x = h.gx; x < h.gx + 2; x++) {
@@ -158,17 +969,28 @@ function rebuildWalkGrid() {
   });
 }
 
-// Generowanie obfitego pola bawełny z losowym przesunięciem
+// Deterministyczne generowanie pola bawełny z seedem wioski (stałe pole 15x18 dla wszystkich graczy)
 function generateCottonField() {
   cottonPlants = [];
+  let seed = 12345;
+  if (currentVillage && currentVillage.id) {
+    seed = currentVillage.id.split('').reduce((a, c) => (a + c.charCodeAt(0) * 31) % 2147483647, 0);
+  }
+  function seededRandom() {
+    seed = (seed * 16807) % 2147483647;
+    return (seed - 1) / 2147483646;
+  }
+
+  let plantIdx = 0;
   for (let gy = fieldArea.gy; gy < fieldArea.gy + fieldArea.gh; gy++) {
     for (let gx = fieldArea.gx; gx < fieldArea.gx + fieldArea.gw; gx++) {
-      if (Math.random() < 0.78) { // Gęste obsadzenie
+      if (seededRandom() < 0.78) {
         cottonPlants.push({
-          id: Math.random(),
+          idx: plantIdx++,
+          id: plantIdx,
           gx, gy,
-          x: gx * TILE_SIZE + TILE_SIZE / 2 + (Math.random() * 14 - 7),
-          y: gy * TILE_SIZE + TILE_SIZE / 2 + (Math.random() * 14 - 7),
+          x: gx * TILE_SIZE + TILE_SIZE / 2 + (seededRandom() * 12 - 6),
+          y: gy * TILE_SIZE + TILE_SIZE / 2 + (seededRandom() * 12 - 6),
           grown: true,
           regrowTimer: 0,
           reservedBy: null
@@ -178,25 +1000,30 @@ function generateCottonField() {
   }
 }
 
-// --- ALGORYTM A* (PATHFINDING) ---
+// --- A* PATHFINDING ---
 function findNearestWalkable(gx, gy) {
-  if (walkGrid[gy] && walkGrid[gy][gx] === 0) return { gx, gy };
+  const maxRows = walkGrid.length;
+  const maxCols = walkGrid[0] ? walkGrid[0].length : COLS;
+  if (gy >= 0 && gy < maxRows && gx >= 0 && gx < maxCols && walkGrid[gy][gx] === 0) return { gx, gy };
   for (let r = 1; r < 6; r++) {
     for (let dy = -r; dy <= r; dy++) {
       for (let dx = -r; dx <= r; dx++) {
         const nx = gx + dx, ny = gy + dy;
-        if (ny >= 0 && ny < ROWS && nx >= 0 && nx < COLS && walkGrid[ny][nx] === 0) {
+        if (ny >= 0 && ny < maxRows && nx >= 0 && nx < maxCols && walkGrid[ny][nx] === 0) {
           return { gx: nx, gy: ny };
         }
       }
     }
   }
-  return { gx: 0, gy: 0 };
+  return { gx: Math.max(0, Math.min(maxCols - 1, gx)), gy: Math.max(0, Math.min(maxRows - 1, gy)) };
 }
 
 function findPathAStar(startX, startY, targetX, targetY) {
   const start = findNearestWalkable(Math.floor(startX / TILE_SIZE), Math.floor(startY / TILE_SIZE));
   const goal = findNearestWalkable(Math.floor(targetX / TILE_SIZE), Math.floor(targetY / TILE_SIZE));
+
+  const maxRows = walkGrid.length;
+  const maxCols = walkGrid[0] ? walkGrid[0].length : COLS;
 
   const openSet = [{ x: start.gx, y: start.gy, g: 0, f: 0, parent: null }];
   const closedSet = new Set();
@@ -224,7 +1051,7 @@ function findPathAStar(startX, startY, targetX, targetY) {
     ];
 
     for (const n of neighbors) {
-      if (n.x < 0 || n.x >= COLS || n.y < 0 || n.y >= ROWS) continue;
+      if (n.x < 0 || n.x >= maxCols || n.y < 0 || n.y >= maxRows) continue;
       if (walkGrid[n.y][n.x] === 1) continue;
       if (closedSet.has(`${n.x},${n.y}`)) continue;
 
@@ -244,384 +1071,850 @@ function findPathAStar(startX, startY, targetX, targetY) {
   return [];
 }
 
-// --- ZARZĄDZANIE CHATAMI I PRACOWNIKAMI ---
-function createHut(gx, gy) {
-  const id = Date.now() + Math.random();
-  const hut = {
-    id, gx, gy,
-    level: 1,
-    capacity: 2,
-    workers: []
-  };
+// --- AKCJE W GRZE (WYSYŁANE NA SERWER) ---
+window.hireWorker = function(hutId, tierIndex) {
+  if (isSpectating) return;
+  sendMsg({ type: 'hire_worker', hutId, tierIndex });
+};
+
+window.upgradeHutCapacity = function(hutId) {
+  if (isSpectating) return;
+  sendMsg({ type: 'upgrade_hut', hutId, upgradeType: 'capacity' });
+};
+
+window.upgradeHutLevel = function(hutId) {
+  if (isSpectating) return;
+  sendMsg({ type: 'upgrade_hut', hutId, upgradeType: 'level' });
+};
+
+window.buyBoostUpgrade = function(type, cost) {
+  if (isSpectating) return;
+  sendMsg({ type: 'upgrade_boost', boostType: type });
+};
+
+// --- ODBIÓR ZDARZEŃ SYNCHRONIZACJI ---
+function onHutBuilt(msg) {
+  const hut = { ...msg.hut, workers: [] };
   huts.push(hut);
+  state.money = msg.money;
   rebuildWalkGrid();
-  state.selectedHutId = id;
+  state.selectedHutId = hut.id;
   state.activeTab = 'hut';
+  state.buildMode = false;
   renderSidebar();
 }
 
-function hireWorker(hutId, tierIndex) {
-  const hut = huts.find(h => h.id === hutId);
-  const spec = WORKER_TIERS[tierIndex];
-  if (!hut || hut.workers.length >= hut.capacity || state.money < spec.cost) return;
+function onWorkerHired(msg) {
+  const hut = huts.find(h => h.id === msg.worker.hutId);
+  if (!hut) return;
 
-  state.money -= spec.cost;
+  const w = msg.worker;
   const worker = {
-    id: Math.random(),
-    hutId: hut.id,
-    tier: spec.tier,
-    name: spec.name,
-    speed: spec.speed,
-    maxCarry: spec.capacity,
-    valueMult: spec.valueMult,
-    color: spec.color,
+    id: w.id, hutId: w.hutId, tier: w.tier, name: w.name,
+    speed: w.speed, maxCarry: w.maxCarry, valueMult: w.valueMult, color: w.color,
     x: (hut.gx + 1) * TILE_SIZE,
     y: (hut.gy + 2) * TILE_SIZE + 8,
     insideHut: true,
-state: 'IDLE', // IDLE, TO_COTTON, HARVESTING, TO_DEPOT, TO_HUT
-path: [],
-targetPlant: null,
-carrying: 0,
-actionTimer: 0
-};
-hut.workers.push(worker);
-workers.push(worker);
-renderSidebar();
+    state: 'IDLE',
+    path: [],
+    targetPlant: null,
+    carrying: 0,
+    actionTimer: 0
+  };
+  hut.workers.push(worker);
+  workers.push(worker);
+  state.money = msg.money;
+  renderSidebar();
 }
-function upgradeHutCapacity(hutId) {
-const hut = huts.find(h => h.id === hutId);
-const cost = hut.capacity * 90;
-if (!hut || state.money < cost) return;
-state.money -= cost;
-hut.capacity += 2;
-renderSidebar();
+
+function onHutUpgraded(msg) {
+  const hut = huts.find(h => h.id === msg.hutId);
+  if (hut) {
+    hut.level = msg.level;
+    hut.capacity = msg.capacity;
+  }
+  state.money = msg.money;
+  renderSidebar();
 }
-function upgradeHutLevel(hutId) {
-const hut = huts.find(h => h.id === hutId);
-const cost = hut.level * 220;
-if (!hut || hut.level >= 3 || state.money < cost) return;
-state.money -= cost;
-hut.level += 1;
-renderSidebar();
+
+function onMoneyUpdated(msg) {
+  state.money = msg.money;
+  state.totalEarned = msg.totalEarned;
+  if (msg.earned) {
+    floatingTexts.push({
+      x: (depot.gx + 1.5) * TILE_SIZE,
+      y: (depot.gy) * TILE_SIZE - 10,
+      text: `+${msg.earned}$`,
+      alpha: 1
+    });
+  }
 }
-// --- LOGIKA AI PRACOWNIKÓW ---
+
+function onBoostActivated(msg) {
+  state.boost.active = msg.boost.active;
+  state.boost.timer = msg.boost.timer;
+  state.boost.duration = msg.boost.duration;
+  state.boost.multiplier = msg.boost.multiplier;
+  state.boost.cooldown = msg.boost.cooldown;
+}
+
+function onBoostUpgraded(msg) {
+  state.money = msg.money;
+  state.boost.duration = msg.boost.duration;
+  state.boost.multiplier = msg.boost.multiplier;
+  state.boost.cooldown = msg.boost.cooldown;
+  state.boost.lvlDuration = msg.boost.lvlDuration;
+  state.boost.lvlPower = msg.boost.lvlPower;
+  state.boost.lvlCooldown = msg.boost.lvlCooldown;
+  renderSidebar();
+}
+
+function onOnlineChanged(msg) {
+  onlinePlayers = msg.online || [];
+  updateOnlineDisplay();
+  updateTeamPanel();
+  if (msg.type === 'player_joined' && isLeader) {
+    sendDriftCorrection();
+  }
+}
+
+function updateOnlineDisplay() {
+  const el = document.getElementById('ui-online');
+  el.innerHTML = `<span class="online-dot"></span>${onlinePlayers.length} online`;
+}
+
+function updateTeamPanel() {
+  const panel = document.getElementById('team-info');
+  if (!currentVillage) { panel.innerHTML = ''; return; }
+
+  let html = `<div class="panel-row"><span>Łączne zarobki:</span><span style="color:#4cd137; font-weight:bold;">${state.totalEarned}$</span></div>`;
+  html += `<div style="margin-top:8px; margin-bottom:4px; font-size:0.82rem; color:#718093;">Członkowie drużyny:</div>`;
+
+  const onlineIds = new Set(onlinePlayers.map(p => p.id));
+  for (const m of villageMembers) {
+    const isOnline = onlineIds.has(m.id);
+    const isMe = currentPlayer && m.id === currentPlayer.id;
+    const isOwner = m.role === 'owner';
+    html += `
+      <div class="worker-item">
+        <span>
+          ${isOwner ? '👑 ' : '👤 '}
+          <b>${escapeHtml(m.username)}</b> ${isMe ? '(Ty)' : ''}
+        </span>
+        <span style="font-size:0.78rem; color:${isOnline ? '#4cd137' : '#718093'};">
+          ${isOnline ? '🟢 online' : '⚪ offline'}
+        </span>
+      </div>
+    `;
+  }
+
+  // Jeśli jesteśmy w swojej wiosce (nie podgląd), dodaj przycisk usunięcia / opuszczenia wioski
+  if (!isSpectating && currentVillage) {
+    const isOwner = currentVillage.ownerId === currentPlayer.id;
+    if (isOwner) {
+      html += `
+        <button class="btn-danger" style="width:100%; font-size:0.82rem; margin-top:12px; padding:6px;" onclick="confirmDeleteVillage('${currentVillage.id}', '${escapeHtml(currentVillage.name)}')">
+          🗑️ Usuń tę wioskę
+        </button>
+      `;
+    } else {
+      html += `
+        <button class="btn-secondary" style="width:100%; font-size:0.82rem; margin-top:12px; padding:6px;" onclick="confirmLeaveVillage('${currentVillage.id}', '${escapeHtml(currentVillage.name)}')">
+          🚪 Opuść tę wioskę
+        </button>
+      `;
+    }
+  }
+
+  panel.innerHTML = html;
+}
+
+// --- ODBIÓR AKCJI PRACOWNIKÓW OD LIDERA (MÓWIMY GDZIE IDĄ, A NIE GDZIE SĄ) ---
+function onWorkerActionReceived(msg) {
+  const w = workers.find(item => item.id === msg.workerId);
+  if (!w) return;
+  const hut = huts.find(h => h.id === w.hutId);
+
+  switch (msg.action) {
+    case 'TO_COTTON': {
+      if (msg.startX !== undefined && (w.insideHut || Math.hypot(w.x - msg.startX, w.y - msg.startY) > 24)) {
+        w.x = msg.startX;
+        w.y = msg.startY;
+      }
+      w.insideHut = false;
+      let targetX = msg.targetX;
+      let targetY = msg.targetY;
+      let plant = cottonPlants[msg.plantIdx];
+      if (plant) {
+        plant.reservedBy = w.id;
+        w.targetPlant = plant;
+        targetX = plant.x;
+        targetY = plant.y;
+      }
+      if (targetX !== undefined && targetY !== undefined) {
+        w.state = 'TO_COTTON';
+        w.path = findPathAStar(w.x, w.y, targetX, targetY);
+      }
+      break;
+    }
+    case 'HARVESTING': {
+      w.state = 'HARVESTING';
+      w.path = [];
+      break;
+    }
+    case 'TO_DEPOT': {
+      if (msg.startX !== undefined && (w.insideHut || Math.hypot(w.x - msg.startX, w.y - msg.startY) > 24)) {
+        w.x = msg.startX;
+        w.y = msg.startY;
+      }
+      w.insideHut = false;
+      w.state = 'TO_DEPOT';
+      const targetX = msg.targetX !== undefined ? msg.targetX : (depot.gx + 3) * TILE_SIZE + 10;
+      const targetY = msg.targetY !== undefined ? msg.targetY : (depot.gy + 1) * TILE_SIZE;
+      w.path = findPathAStar(w.x, w.y, targetX, targetY);
+      break;
+    }
+    case 'AT_DEPOT': {
+      w.carrying = 0;
+      w.state = 'IDLE';
+      w.path = [];
+      if (msg.earned) {
+        floatingTexts.push({
+          x: (depot.gx + 1.5) * TILE_SIZE,
+          y: (depot.gy) * TILE_SIZE - 10,
+          text: `+${msg.earned}$`,
+          alpha: 1
+        });
+      }
+      break;
+    }
+    case 'TO_HUT': {
+      if (hut) {
+        w.state = 'TO_HUT';
+        w.path = findPathAStar(w.x, w.y, (hut.gx + 1) * TILE_SIZE, (hut.gy + 2) * TILE_SIZE + 10);
+      }
+      break;
+    }
+    case 'EXIT_HUT': {
+      if (hut) {
+        w.insideHut = false;
+        w.x = (hut.gx + 1) * TILE_SIZE;
+        w.y = (hut.gy + 2) * TILE_SIZE + 10;
+        w.state = 'IDLE';
+        w.path = [];
+      }
+      break;
+    }
+  }
+}
+
+// Odbiór zerwania bawełny od lidera (natychmiastowe zniknięcie białego kwiatu bawełny u wszystkich)
+function onPlantHarvestedReceived(msg) {
+  let plant = cottonPlants[msg.plantIdx];
+  if (!plant && msg.targetX !== undefined && msg.targetY !== undefined) {
+    plant = cottonPlants.find(p => p.grown && Math.hypot(p.x - msg.targetX, p.y - msg.targetY) < 24);
+  }
+  if (plant) {
+    plant.grown = false;
+    plant.regrowTimer = 14;
+    plant.reservedBy = null;
+  }
+  const w = workers.find(item => item.id === msg.workerId);
+  if (w) {
+    w.carrying = Math.min(w.maxCarry, (w.carrying || 0) + 1);
+    w.targetPlant = null;
+    w.state = 'IDLE';
+  }
+}
+
+// Okresowa korekta pozycji pracowników (co ~2.5s zamiast teleportera co 100ms)
+function onDriftCorrectionReceived(msg) {
+  if (msg.gameMinutes !== undefined) {
+    if (Math.abs(state.gameMinutes - msg.gameMinutes) > 3) {
+      state.gameMinutes = msg.gameMinutes;
+    }
+  }
+  if (msg.workers && Array.isArray(msg.workers)) {
+    msg.workers.forEach(sw => {
+      const w = workers.find(item => item.id === sw.id);
+      if (w) {
+        w.carrying = sw.carrying;
+        if (sw.insideHut !== w.insideHut) {
+          w.insideHut = sw.insideHut;
+          w.x = sw.x;
+          w.y = sw.y;
+          w.path = [];
+        } else if (!w.insideHut) {
+          const dist = Math.hypot(w.x - sw.x, w.y - sw.y);
+          if (dist > 32) {
+            w.x = sw.x;
+            w.y = sw.y;
+          }
+        }
+      }
+    });
+  }
+  if (msg.harvestedPlants && Array.isArray(msg.harvestedPlants)) {
+    msg.harvestedPlants.forEach(hp => {
+      const p = cottonPlants[hp.idx];
+      if (p) {
+        p.grown = false;
+        p.regrowTimer = hp.regrowTimer;
+      }
+    });
+  }
+}
+
+// Kompatybilność wsteczna z workers_sync
+function onWorkersSyncReceived(msg) {
+  onDriftCorrectionReceived(msg);
+}
+
+// Funkcja wysyłająca pełną korektę pozycji i zerwanych roślin
+function sendDriftCorrection() {
+  if (!isLeader || isSpectating || !gameActive) return;
+  sendMsg({
+    type: 'workers_drift_correction',
+    gameMinutes: state.gameMinutes,
+    harvestedPlants: cottonPlants.filter(p => !p.grown).map(p => ({ idx: p.idx, regrowTimer: Math.round(p.regrowTimer * 10) / 10 })),
+    workers: workers.map(w => ({
+      id: w.id,
+      x: Math.round(w.x),
+      y: Math.round(w.y),
+      insideHut: w.insideHut,
+      state: w.state,
+      carrying: w.carrying
+    }))
+  });
+}
+
+// --- SYMULACJA PRACOWNIKÓW ---
 function isWorkTime() {
-const hour = Math.floor(state.gameMinutes / 60);
-return hour >= 11 && hour < 20; // Praca od 11:00 do 20:00
+  const hour = Math.floor(state.gameMinutes / 60);
+  return hour >= 11 && hour < 20;
 }
+
 function updateWorkers(dt) {
-const working = isWorkTime();
-const boostMult = state.boost.active ? state.boost.multiplier : 1.0;
-workers.forEach(w => {
-const hut = huts.find(h => h.id === w.hutId);
-if (!hut) return;
-// 1. Gdy wybija 11:00 -> wyjdź z chaty
-if (working && w.insideHut) {
-w.insideHut = false;
-w.x = (hut.gx + 1) * TILE_SIZE;
-w.y = (hut.gy + 2) * TILE_SIZE + 10;
-w.state = 'IDLE';
+  const working = isWorkTime();
+  const boostMult = state.boost.active ? state.boost.multiplier : 1.0;
+
+  // 1. ZAWSZE płynnie poruszaj pracownikami po wyznaczonej ścieżce (u WSZYSTKICH graczy z 60 FPS)
+  workers.forEach(w => {
+    if (w.insideHut) return;
+    if (w.path.length > 0) {
+      const target = w.path[0];
+      const dx = target.x - w.x;
+      const dy = target.y - w.y;
+      const dist = Math.hypot(dx, dy);
+      const moveStep = w.speed * boostMult * dt;
+      if (dist <= moveStep) {
+        w.x = target.x;
+        w.y = target.y;
+        w.path.shift();
+      } else {
+        w.x += (dx / dist) * moveStep;
+        w.y += (dy / dist) * moveStep;
+      }
+    }
+  });
+
+  // 2. Tylko autorytatywny LIDER podejmuje decyzyjną logikę AI i wysyła cel (gdzie idą) do innych graczy
+  if (!isLeader || isSpectating) return;
+
+  workers.forEach(w => {
+    const hut = huts.find(h => h.id === w.hutId);
+    if (!hut) return;
+
+    // 11:00 -> wyjście z chaty
+    if (working && w.insideHut) {
+      w.insideHut = false;
+      w.x = (hut.gx + 1) * TILE_SIZE;
+      w.y = (hut.gy + 2) * TILE_SIZE + 10;
+      w.state = 'IDLE';
+      sendMsg({ type: 'worker_action', workerId: w.id, action: 'EXIT_HUT' });
+    }
+
+    // 20:00 -> powrót do chaty
+    if (!working && !w.insideHut && w.state !== 'TO_HUT') {
+      if (w.targetPlant) { w.targetPlant.reservedBy = null; w.targetPlant = null; }
+      w.state = 'TO_HUT';
+      w.path = findPathAStar(w.x, w.y, (hut.gx + 1) * TILE_SIZE, (hut.gy + 2) * TILE_SIZE + 10);
+      sendMsg({ type: 'worker_action', workerId: w.id, action: 'TO_HUT' });
+    }
+
+    if (w.insideHut) return;
+
+    // Przydział zadania (IDLE)
+    if (w.state === 'IDLE') {
+      if (w.carrying >= w.maxCarry) {
+        w.state = 'TO_DEPOT';
+        const targetX = (depot.gx + 3) * TILE_SIZE + 10;
+        const targetY = (depot.gy + 1) * TILE_SIZE;
+        w.path = findPathAStar(w.x, w.y, targetX, targetY);
+        sendMsg({
+          type: 'worker_action',
+          workerId: w.id,
+          action: 'TO_DEPOT',
+          targetX: Math.round(targetX),
+          targetY: Math.round(targetY),
+          startX: Math.round(w.x),
+          startY: Math.round(w.y)
+        });
+        return;
+      }
+
+      // Znajdź najbliższą dojrzałą bawełnę
+      const available = cottonPlants.filter(p => p.grown && !p.reservedBy);
+      if (available.length > 0) {
+        available.sort((a, b) => Math.hypot(a.x - w.x, a.y - w.y) - Math.hypot(b.x - w.x, b.y - w.y));
+        const chosen = available[0];
+        chosen.reservedBy = w.id;
+        w.targetPlant = chosen;
+        w.state = 'TO_COTTON';
+        w.path = findPathAStar(w.x, w.y, chosen.x, chosen.y);
+        sendMsg({
+          type: 'worker_action',
+          workerId: w.id,
+          action: 'TO_COTTON',
+          plantIdx: chosen.idx,
+          targetX: Math.round(chosen.x),
+          targetY: Math.round(chosen.y),
+          startX: Math.round(w.x),
+          startY: Math.round(w.y)
+        });
+      }
+    }
+
+    // Gdy dotarł do celu ścieżki
+    if (w.path.length === 0) {
+      if (w.state === 'TO_COTTON') {
+        w.state = 'HARVESTING';
+        w.actionTimer = 0.7 / boostMult;
+        sendMsg({ type: 'worker_action', workerId: w.id, action: 'HARVESTING' });
+      } else if (w.state === 'HARVESTING') {
+        w.actionTimer -= dt;
+        if (w.actionTimer <= 0) {
+          if (w.targetPlant) {
+            w.targetPlant.grown = false;
+            w.targetPlant.regrowTimer = 14;
+            w.targetPlant.reservedBy = null;
+            sendMsg({
+              type: 'plant_harvested',
+              plantIdx: w.targetPlant.idx,
+              targetX: Math.round(w.targetPlant.x),
+              targetY: Math.round(w.targetPlant.y),
+              workerId: w.id
+            });
+            w.targetPlant = null;
+          }
+          w.carrying += 1;
+          w.state = 'IDLE';
+        }
+      } else if (w.state === 'TO_DEPOT') {
+        const earned = Math.round(w.carrying * 15 * w.valueMult);
+        sendMsg({ type: 'sync_earnings', earned });
+        sendMsg({ type: 'worker_action', workerId: w.id, action: 'AT_DEPOT', earned });
+        floatingTexts.push({ x: w.x, y: w.y - 12, text: `+${earned}$`, alpha: 1 });
+        w.carrying = 0;
+        w.state = 'IDLE';
+      } else if (w.state === 'TO_HUT') {
+        w.insideHut = true;
+        w.carrying = 0;
+      }
+    }
+  });
+
+  // Okresowa korekta pozycji (co 2.5s, aby zniwelować rozbieżności bez rwania animacji)
+  syncCounter += dt;
+  if (syncCounter >= 2.5) {
+    syncCounter = 0;
+    sendDriftCorrection();
+  }
 }
-// 2. Gdy kończy się zmiana -> wróć do chaty
-if (!working && !w.insideHut && w.state !== 'TO_HUT') {
-if (w.targetPlant) { w.targetPlant.reservedBy = null; w.targetPlant = null; }
-w.state = 'TO_HUT';
-w.path = findPathAStar(w.x, w.y, (hut.gx + 1) * TILE_SIZE, (hut.gy + 2) * TILE_SIZE + 10);
-}
-if (w.insideHut) return;
-// 3. Wybór losowej dojrzałej rośliny bawełny
-if (w.state === 'IDLE') {
-if (w.carrying >= w.maxCarry) {
-w.state = 'TO_DEPOT';
-w.path = findPathAStar(w.x, w.y, (depot.gx + 3) * TILE_SIZE + 10, (depot.gy + 1) * TILE_SIZE);
-return;
-}
-const available = cottonPlants.filter(p => p.grown && !p.reservedBy);
-if (available.length > 0) {
-const chosen = available[Math.floor(Math.random() * available.length)];
-chosen.reservedBy = w.id;
-w.targetPlant = chosen;
-w.state = 'TO_COTTON';
-w.path = findPathAStar(w.x, w.y, chosen.x, chosen.y);
-}
-}
-// 4. Poruszanie się po ścieżce A*
-if (w.path.length > 0) {
-const target = w.path[0];
-const dx = target.x - w.x;
-const dy = target.y - w.y;
-const dist = Math.hypot(dx, dy);
-const moveStep = w.speed * boostMult * dt;
-if (dist <= moveStep) {
-w.x = target.x;
-w.y = target.y;
-w.path.shift();
-} else {
-w.x += (dx / dist) * moveStep;
-w.y += (dy / dist) * moveStep;
-}
-} else {
-// Dotarcie do celu
-if (w.state === 'TO_COTTON') {
-w.state = 'HARVESTING';
-w.actionTimer = 0.7 / boostMult;
-} else if (w.state === 'HARVESTING') {
-w.actionTimer -= dt;
-if (w.actionTimer <= 0) {
-if (w.targetPlant) {
-w.targetPlant.grown = false;
-w.targetPlant.regrowTimer = 14;
-w.targetPlant.reservedBy = null;
-w.targetPlant = null;
-}
-w.carrying += 1;
-w.state = 'IDLE';
-}
-} else if (w.state === 'TO_DEPOT') {
-const earned = Math.round(w.carrying * 15 * w.valueMult);
-state.money += earned;
-floatingTexts.push({ x: w.x, y: w.y - 12, text: `+${earned}$`, alpha: 1 });
-w.carrying = 0;
-w.state = 'IDLE';
-} else if (w.state === 'TO_HUT') {
-w.insideHut = true;
-w.carrying = 0;
-}
-}
-});
-}
-// --- AKTUALIZACJA CZASU, ROŚLIN I BOOSTA ---
+
+// --- AKTUALIZACJA CZASU I ROŚLIN ---
 function update(dt) {
-// Zegar (24h = 1440 min)
-state.gameMinutes = (state.gameMinutes + state.timeSpeed * dt) % 1440;
-// Odrastanie bawełny
-cottonPlants.forEach(p => {
-if (!p.grown) {
-p.regrowTimer -= dt;
-if (p.regrowTimer <= 0) p.grown = true;
+  if (!gameActive) return;
+
+  if (isLeader && !isSpectating) {
+    state.gameMinutes = (state.gameMinutes + state.timeSpeed * dt) % 1440;
+  }
+
+  cottonPlants.forEach(p => {
+    if (!p.grown) {
+      p.regrowTimer -= dt;
+      if (p.regrowTimer <= 0) p.grown = true;
+    }
+  });
+
+  // Obsługa licznika Boosta
+  if (state.boost.active) {
+    state.boost.timer -= dt;
+    if (state.boost.timer <= 0) {
+      state.boost.active = false;
+      state.boost.cooldownTimer = state.boost.cooldown;
+      if (isLeader && !isSpectating) {
+        sendMsg({ type: 'sync_boost', active: false, timer: 0, cooldownTimer: state.boost.cooldown });
+      }
+    }
+  } else if (state.boost.cooldownTimer > 0) {
+    state.boost.cooldownTimer = Math.max(0, state.boost.cooldownTimer - dt);
+  }
+
+  floatingTexts.forEach(ft => { ft.y -= 25 * dt; ft.alpha -= 0.9 * dt; });
+  floatingTexts = floatingTexts.filter(ft => ft.alpha > 0);
+
+  updateWorkers(dt);
+  updateHUD();
 }
-});
-// Boost
-if (state.boost.active) {
-state.boost.timer -= dt;
-if (state.boost.timer <= 0) {
-state.boost.active = false;
-state.boost.cooldownTimer = state.boost.cooldown;
-}
-} else if (state.boost.cooldownTimer > 0) {
-state.boost.cooldownTimer = Math.max(0, state.boost.cooldownTimer - dt);
-}
-// Unoszące się napisy z zarobkiem
-floatingTexts.forEach(ft => { ft.y -= 25 * dt; ft.alpha -= 0.9 * dt; });
-floatingTexts = floatingTexts.filter(ft => ft.alpha > 0);
-updateWorkers(dt);
-updateHUD();
-}
-// --- RENDEROWANIE ---
+
+// --- RENDEROWANIE MAPY ---
 function draw() {
-ctx.clearRect(0, 0, canvas.width, canvas.height);
-// Tło pola uprawnego
-ctx.fillStyle = "#58943c";
-ctx.fillRect(fieldArea.gx * TILE_SIZE, fieldArea.gy * TILE_SIZE, fieldArea.gw * TILE_SIZE, fieldArea.gh * TILE_SIZE);
-ctx.strokeStyle = "#487eb0";
-ctx.lineWidth = 2;
-ctx.strokeRect(fieldArea.gx * TILE_SIZE, fieldArea.gy * TILE_SIZE, fieldArea.gw * TILE_SIZE, fieldArea.gh * TILE_SIZE);
-// Punkt skupu
-ctx.fillStyle = "#d35400";
-ctx.fillRect(depot.gx * TILE_SIZE, depot.gy * TILE_SIZE, depot.gw * TILE_SIZE, depot.gh * TILE_SIZE);
-ctx.strokeStyle = "#f39c12";
-ctx.strokeRect(depot.gx * TILE_SIZE, depot.gy * TILE_SIZE, depot.gw * TILE_SIZE, depot.gh * TILE_SIZE);
-ctx.fillStyle = "#fff";
-ctx.font = "bold 12px sans-serif";
-ctx.textAlign = "center";
-ctx.fillText("SKUP", (depot.gx + 1.5) * TILE_SIZE, (depot.gy + 1.6) * TILE_SIZE);
-// Rośliny bawełny
-cottonPlants.forEach(p => {
-// Krzaczek
-ctx.fillStyle = "#27ae60";
-ctx.beginPath();
-ctx.arc(p.x, p.y, 7, 0, Math.PI * 2);
-ctx.fill();
-// Puszysta biała bawełna
-if (p.grown) {
-ctx.fillStyle = "#ffffff";
-ctx.beginPath();
-ctx.arc(p.x - 3, p.y - 2, 4, 0, Math.PI * 2);
-ctx.arc(p.x + 3, p.y - 1, 4, 0, Math.PI * 2);
-ctx.arc(p.x, p.y + 3, 4, 0, Math.PI * 2);
-ctx.fill();
+  if (!gameActive) return;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Pole uprawne
+  ctx.fillStyle = "#58943c";
+  ctx.fillRect(fieldArea.gx * TILE_SIZE, fieldArea.gy * TILE_SIZE, fieldArea.gw * TILE_SIZE, fieldArea.gh * TILE_SIZE);
+  ctx.strokeStyle = "#487eb0";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(fieldArea.gx * TILE_SIZE, fieldArea.gy * TILE_SIZE, fieldArea.gw * TILE_SIZE, fieldArea.gh * TILE_SIZE);
+
+  // Punkt skupu
+  ctx.fillStyle = "#d35400";
+  ctx.fillRect(depot.gx * TILE_SIZE, depot.gy * TILE_SIZE, depot.gw * TILE_SIZE, depot.gh * TILE_SIZE);
+  ctx.strokeStyle = "#f39c12";
+  ctx.strokeRect(depot.gx * TILE_SIZE, depot.gy * TILE_SIZE, depot.gw * TILE_SIZE, depot.gh * TILE_SIZE);
+  ctx.fillStyle = "#fff";
+  ctx.font = "bold 12px sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText("SKUP", (depot.gx + 1.5) * TILE_SIZE, (depot.gy + 1.6) * TILE_SIZE);
+
+  // Krzaczki bawełny
+  cottonPlants.forEach(p => {
+    ctx.fillStyle = "#27ae60";
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 7, 0, Math.PI * 2);
+    ctx.fill();
+    if (p.grown) {
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath();
+      ctx.arc(p.x - 3, p.y - 2, 4, 0, Math.PI * 2);
+      ctx.arc(p.x + 3, p.y - 1, 4, 0, Math.PI * 2);
+      ctx.arc(p.x, p.y + 3, 4, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  });
+
+  // Chaty
+  huts.forEach(h => {
+    const px = h.gx * TILE_SIZE;
+    const py = h.gy * TILE_SIZE;
+    const size = TILE_SIZE * 2;
+    ctx.fillStyle = h.id === state.selectedHutId ? "#fbc531" : "#8c7ae6";
+    ctx.fillRect(px, py, size, size);
+    ctx.strokeStyle = "#2f3640";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(px, py, size, size);
+    ctx.fillStyle = "#1e272e";
+    ctx.font = "bold 11px sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText(`Chata Lv.${h.level}`, px + size / 2, py + 24);
+    ctx.fillText(`${h.workers.length}/${h.capacity} os.`, px + size / 2, py + 42);
+  });
+
+  // Pracownicy
+  workers.forEach(w => {
+    if (w.insideHut) return;
+    if (state.boost.active) {
+      ctx.strokeStyle = "#ff5252";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(w.x, w.y, 12, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    ctx.fillStyle = w.color;
+    ctx.beginPath();
+    ctx.arc(w.x, w.y, 8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = "#fff";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    if (w.carrying > 0) {
+      ctx.fillStyle = "#fff";
+      ctx.beginPath();
+      ctx.arc(w.x, w.y - 10, 4 + w.carrying, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  });
+
+  // Pływające napisy zarobku
+  floatingTexts.forEach(ft => {
+    ctx.fillStyle = `rgba(255, 255, 255, ${ft.alpha})`;
+    ctx.font = "bold 14px sans-serif";
+    ctx.fillText(ft.text, ft.x, ft.y);
+  });
 }
-});
-// Chaty rolników
-huts.forEach(h => {
-const px = h.gx * TILE_SIZE;
-const py = h.gy * TILE_SIZE;
-const size = TILE_SIZE * 2;
-ctx.fillStyle = h.id === state.selectedHutId ? "#fbc531" : "#8c7ae6";
-ctx.fillRect(px, py, size, size);
-ctx.strokeStyle = "#2f3640";
-ctx.lineWidth = 2;
-ctx.strokeRect(px, py, size, size);
-ctx.fillStyle = "#1e272e";
-ctx.font = "bold 11px sans-serif";
-ctx.textAlign = "center";
-ctx.fillText(`Chata Lv.${h.level}`, px + size / 2, py + 24);
-ctx.fillText(`${h.workers.length}/${h.capacity} os.`, px + size / 2, py + 42);
-});
-// Pracownicy
-workers.forEach(w => {
-if (w.insideHut) return;
-// Aura boosta
-if (state.boost.active) {
-ctx.strokeStyle = "#ff5252";
-ctx.lineWidth = 2;
-ctx.beginPath();
-ctx.arc(w.x, w.y, 12, 0, Math.PI * 2);
-ctx.stroke();
-}
-ctx.fillStyle = w.color;
-ctx.beginPath();
-ctx.arc(w.x, w.y, 8, 0, Math.PI * 2);
-ctx.fill();
-ctx.strokeStyle = "#fff";
-ctx.lineWidth = 1.5;
-ctx.stroke();
-// Koszyk z bawełną nad głową
-if (w.carrying > 0) {
-ctx.fillStyle = "#fff";
-ctx.beginPath();
-ctx.arc(w.x, w.y - 10, 4 + w.carrying, 0, Math.PI * 2);
-ctx.fill();
-}
-});
-// Efekty zarobku
-floatingTexts.forEach(ft => {
-ctx.fillStyle = `rgba(255, 255, 255, ${ft.alpha})`;
-ctx.font = "bold 14px sans-serif";
-ctx.fillText(ft.text, ft.x, ft.y);
-});
-}
-// --- INTERFEJS UŻYTKOWNIKA (HUD + PANEL BOCZNY) ---
+
+// --- AKTUALIZACJA HUD ---
 function updateHUD() {
-document.getElementById('ui-money').textContent = state.money;
-const hrs = String(Math.floor(state.gameMinutes / 60)).padStart(2, '0');
-const mins = String(Math.floor(state.gameMinutes % 60)).padStart(2, '0');
-document.getElementById('ui-time').textContent = `${hrs}:${mins}`;
-const shiftBadge = document.getElementById('ui-shift');
-if (isWorkTime()) {
-shiftBadge.textContent = "ZBIORY W TOKU (do 20:00)";
-shiftBadge.className = "status-badge status-work";
-} else {
-shiftBadge.textContent = "Odpoczynek (Start 11:00)";
-shiftBadge.className = "status-badge";
+  document.getElementById('ui-money').textContent = state.money;
+  const hrs = String(Math.floor(state.gameMinutes / 60)).padStart(2, '0');
+  const mins = String(Math.floor(state.gameMinutes % 60)).padStart(2, '0');
+  document.getElementById('ui-time').textContent = `${hrs}:${mins}`;
+
+  const shiftBadge = document.getElementById('ui-shift');
+  if (isWorkTime()) {
+    shiftBadge.textContent = "ZBIORY W TOKU (do 20:00)";
+    shiftBadge.className = "status-badge status-work";
+  } else {
+    shiftBadge.textContent = "Odpoczynek (Start 11:00)";
+    shiftBadge.className = "status-badge";
+  }
+
+  if (!isSpectating) {
+    const btnBoost = document.getElementById('btn-boost');
+    if (state.boost.active) {
+      btnBoost.textContent = `⚡ BOOST AKTYWNY (${state.boost.timer.toFixed(1)}s)`;
+      btnBoost.disabled = true;
+    } else if (state.boost.cooldownTimer > 0) {
+      btnBoost.textContent = `⏳ Odnowienie (${Math.ceil(state.boost.cooldownTimer)}s)`;
+      btnBoost.disabled = true;
+    } else {
+      btnBoost.textContent = `⚡ BOOST (x${state.boost.multiplier.toFixed(1)})`;
+      btnBoost.disabled = false;
+    }
+
+    const btnBuild = document.getElementById('btn-build-hut');
+    btnBuild.disabled = state.money < 150;
+    btnBuild.classList.toggle('active', state.buildMode);
+  }
 }
-const btnBoost = document.getElementById('btn-boost');
-if (state.boost.active) {
-btnBoost.textContent = `⚡ BOOST AKTYWNY (${state.boost.timer.toFixed(1)}s)`;
-btnBoost.disabled = true;
-} else if (state.boost.cooldownTimer > 0) {
-btnBoost.textContent = `⏳ Odnowienie (${Math.ceil(state.boost.cooldownTimer)}s)`;
-btnBoost.disabled = true;
-} else {
-btnBoost.textContent = `⚡ BOOST (x${state.boost.multiplier.toFixed(1)})`;
-btnBoost.disabled = false;
-}
-const btnBuild = document.getElementById('btn-build-hut');
-btnBuild.disabled = state.money < 150;
-btnBuild.classList.toggle('active', state.buildMode);
-}
+
+// --- DYNAMICZNY PANEL BOCZNY (CHATA / SKLEP) ---
 function renderSidebar() {
-const container = document.getElementById('dynamic-panel');
-if (state.activeTab === 'shop') {
-const costDur = state.boost.lvlDuration * 120;
-const costPow = state.boost.lvlPower * 160;
-const costCd = state.boost.lvlCooldown * 140;
-container.innerHTML = `<div class="panel-card"> <h3>🛒 Sklep: Ulepszenia Boosta</h3> <div class="panel-row"> <span>Czas trwania (${state.boost.duration}s)</span> <button onclick="buyBoostUpgrade('duration', ${costDur})" ${state.money < costDur ? 'disabled' : ''}>+2s (${costDur}$)</button> </div> <div class="panel-row"> <span>Moc przyspieszenia (x${state.boost.multiplier.toFixed(1)})</span> <button onclick="buyBoostUpgrade('power', ${costPow})" ${state.money < costPow ? 'disabled' : ''}>+0.3x (${costPow}$)</button> </div> <div class="panel-row"> <span>Czas odnowienia (${state.boost.cooldown}s)</span> <button onclick="buyBoostUpgrade('cooldown', ${costCd})" ${state.money < costCd || state.boost.cooldown <= 6 ? 'disabled' : ''}>-2s (${costCd}$)</button> </div> </div>`;
-return;
+  const container = document.getElementById('dynamic-panel');
+  if (!container) return;
+
+  if (isSpectating) {
+    // W trybie podglądu wyświetlamy tylko informacje tylko do odczytu
+    const hut = huts.find(h => h.id === state.selectedHutId);
+    if (!hut) {
+      container.innerHTML = `<div class="panel-card"><p class="hint">Kliknij dowolną chatę na mapie, aby podejrzeć jej obsadę.</p></div>`;
+      return;
+    }
+    const workersListHTML = hut.workers.map(w =>
+      `<div class="worker-item"><span>${escapeHtml(w.name)}</span><span>Kosz: ${w.carrying}/${w.maxCarry}</span></div>`
+    ).join('');
+
+    container.innerHTML = `
+      <div class="panel-card">
+        <h3>🏠 Chata Rolników (Podgląd)</h3>
+        <div class="panel-row"><span>Poziom chaty:</span><b>Lv.${hut.level}</b></div>
+        <div class="panel-row"><span>Pracownicy:</span><b>${hut.workers.length} / ${hut.capacity}</b></div>
+        <hr style="border-color:#353b48; margin:10px 0;">
+        <b style="font-size:0.88rem;">Zatrudnieni w tej chacie:</b>
+        <div class="worker-list">${workersListHTML || '<span class="hint">Brak pracowników</span>'}</div>
+      </div>
+    `;
+    return;
+  }
+
+  if (state.activeTab === 'shop') {
+    const costDur = state.boost.lvlDuration * 120;
+    const costPow = state.boost.lvlPower * 160;
+    const costCd = state.boost.lvlCooldown * 140;
+    container.innerHTML = `
+      <div class="panel-card">
+        <h3>🛒 Sklep: Ulepszenia Boosta (Wspólny)</h3>
+        <div class="panel-row">
+          <span>Czas trwania (${state.boost.duration}s)</span>
+          <button onclick="buyBoostUpgrade('duration', ${costDur})" ${state.money < costDur ? 'disabled' : ''}>+2s (${costDur}$)</button>
+        </div>
+        <div class="panel-row">
+          <span>Moc przyspieszenia (x${state.boost.multiplier.toFixed(1)})</span>
+          <button onclick="buyBoostUpgrade('power', ${costPow})" ${state.money < costPow ? 'disabled' : ''}>+0.3x (${costPow}$)</button>
+        </div>
+        <div class="panel-row">
+          <span>Czas odnowienia (${state.boost.cooldown}s)</span>
+          <button onclick="buyBoostUpgrade('cooldown', ${costCd})" ${state.money < costCd || state.boost.cooldown <= 6 ? 'disabled' : ''}>-2s (${costCd}$)</button>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  const hut = huts.find(h => h.id === state.selectedHutId);
+  if (!hut) {
+    container.innerHTML = `<div class="panel-card"><p class="hint">Kliknij dowolną chatę na mapie, aby zarządzać pracownikami.</p></div>`;
+    return;
+  }
+
+  const capCost = hut.capacity * 90;
+  const lvlCost = hut.level * 220;
+  let hireButtonsHTML = '';
+  WORKER_TIERS.forEach((tier, idx) => {
+    const unlocked = hut.level >= tier.tier;
+    const canHire = unlocked && hut.workers.length < hut.capacity && state.money >= tier.cost;
+    hireButtonsHTML += `
+      <div class="panel-row">
+        <span>${unlocked ? tier.name : '🔒 Wymaga Lv.' + tier.tier}</span>
+        <button onclick="hireWorker('${hut.id}', ${idx})" ${!canHire ? 'disabled' : ''}>Zatrudnij (${tier.cost}$)</button>
+      </div>
+    `;
+  });
+
+  const workersListHTML = hut.workers.map(w =>
+    `<div class="worker-item"><span>${escapeHtml(w.name)}</span><span>Kosz: ${w.carrying}/${w.maxCarry}</span></div>`
+  ).join('');
+
+  container.innerHTML = `
+    <div class="panel-card">
+      <h3>🏠 Chata Rolników (Poziom ${hut.level}/3)</h3>
+      <div class="panel-row">
+        <span>Pojemność: <b>${hut.workers.length} / ${hut.capacity}</b></span>
+        <button onclick="upgradeHutCapacity('${hut.id}')" ${state.money < capCost ? 'disabled' : ''}>+2 miejsca (${capCost}$)</button>
+      </div>
+      <div class="panel-row">
+        <span>Poziom chaty: <b>Lv.${hut.level}</b></span>
+        <button onclick="upgradeHutLevel('${hut.id}')" ${hut.level >= 3 || state.money < lvlCost ? 'disabled' : ''}>
+          ${hut.level >= 3 ? 'MAX' : `Awans (${lvlCost}$)`}
+        </button>
+      </div>
+      <hr style="border-color:#353b48; margin:10px 0;">
+      <b style="font-size:0.88rem;">Zatrudnij pracownika:</b>
+      ${hireButtonsHTML}
+      <div class="worker-list">${workersListHTML || '<span class="hint">Brak pracowników w chacie</span>'}</div>
+    </div>
+  `;
 }
-const hut = huts.find(h => h.id === state.selectedHutId);
-if (!hut) {
-container.innerHTML = `<div class="panel-card"><p class="hint">Kliknij dowolną chatę na mapie, aby zarządzać pracownikami.</p></div>`;
-return;
-}
-const capCost = hut.capacity * 90;
-const lvlCost = hut.level * 220;
-let hireButtonsHTML = '';
-WORKER_TIERS.forEach((tier, idx) => {
-const unlocked = hut.level >= tier.tier;
-const canHire = unlocked && hut.workers.length < hut.capacity && state.money >= tier.cost;
-hireButtonsHTML += `<div class="panel-row"> <span>${unlocked ? tier.name : '🔒 Wymaga Lv.' + tier.tier}</span> <button onclick="hireWorker(${hut.id}, ${idx})" ${!canHire ? 'disabled' : ''}>Zatrudnij (${tier.cost}$)</button> </div>`;
-});
-const workersListHTML = hut.workers.map(w =>
-`<div class="worker-item"><span>${w.name}</span><span>Kosz: ${w.carrying}/${w.maxCarry}</span></div>`
-).join('');
-container.innerHTML = `<div class="panel-card"> <h3>🏠 Chata Rolników (Poziom ${hut.level}/3)</h3> <div class="panel-row"> <span>Pojemność: <b>${hut.workers.length} / ${hut.capacity}</b></span> <button onclick="upgradeHutCapacity(${hut.id})" ${state.money < capCost ? 'disabled' : ''}>+2 miejsca (${capCost}$)</button> </div> <div class="panel-row"> <span>Poziom chaty: <b>Lv.${hut.level}</b></span> <button onclick="upgradeHutLevel(${hut.id})" ${hut.level >= 3 || state.money < lvlCost ? 'disabled' : ''}> ${hut.level >= 3 ? 'MAX' :`Awans (${lvlCost}$)`} </button> </div> <hr style="border-color:#353b48; margin:10px 0;"> <b>Zatrudnij pracownika:</b> ${hireButtonsHTML} <div class="worker-list">${workersListHTML || '<span class="hint">Brak pracowników w chacie</span>'}</div> </div> `;
-}
-window.buyBoostUpgrade = function(type, cost) {
-if (state.money < cost) return;
-state.money -= cost;
-if (type === 'duration') { state.boost.duration += 2; state.boost.lvlDuration++; }
-if (type === 'power') { state.boost.multiplier += 0.3; state.boost.lvlPower++; }
-if (type === 'cooldown') { state.boost.cooldown = Math.max(6, state.boost.cooldown - 2); state.boost.lvlCooldown++; }
-renderSidebar();
-};
-// --- ZDARZENIA KLIKNIĘĆ ---
+
+// --- OBSŁUGA KLIKNIĘĆ ---
 document.getElementById('btn-build-hut').addEventListener('click', () => {
-state.buildMode = !state.buildMode;
+  if (isSpectating) return;
+  state.buildMode = !state.buildMode;
 });
+
 document.getElementById('btn-boost').addEventListener('click', () => {
-if (!state.boost.active && state.boost.cooldownTimer <= 0) {
-state.boost.active = true;
-state.boost.timer = state.boost.duration;
-}
+  if (isSpectating) return;
+  if (!state.boost.active && state.boost.cooldownTimer <= 0) {
+    sendMsg({ type: 'activate_boost' });
+  }
 });
+
 document.getElementById('btn-shop').addEventListener('click', () => {
-state.activeTab = state.activeTab === 'shop' ? 'hut' : 'shop';
-renderSidebar();
+  if (isSpectating) return;
+  state.activeTab = state.activeTab === 'shop' ? 'hut' : 'shop';
+  renderSidebar();
 });
+
 canvas.addEventListener('click', (e) => {
-const rect = canvas.getBoundingClientRect();
-const mx = e.clientX - rect.left;
-const my = e.clientY - rect.top;
-const gx = Math.floor(mx / TILE_SIZE);
-const gy = Math.floor(my / TILE_SIZE);
-// Tryb budowania nowej chaty
-if (state.buildMode) {
-if (state.money < 150) return;
-// Sprawdź czy teren jest wolny i poza polem bawełny
-const onField = gx >= fieldArea.gx - 1 && gx <= fieldArea.gx + fieldArea.gw;
-const blocked = walkGrid[gy]?.[gx] === 1 || walkGrid[gy + 1]?.[gx] === 1 ||
-walkGrid[gy]?.[gx + 1] === 1 || walkGrid[gy + 1]?.[gx + 1] === 1;
-if (!onField && !blocked && gy < ROWS - 2 && gx < COLS - 2) {
-state.money -= 150;
-createHut(gx, gy);
-state.buildMode = false;
-}
-return;
-}
-// Wybór istniejącej chaty
-const clickedHut = huts.find(h => gx >= h.gx && gx < h.gx + 2 && gy >= h.gy && gy < h.gy + 2);
-if (clickedHut) {
-state.selectedHutId = clickedHut.id;
-state.activeTab = 'hut';
-renderSidebar();
-}
+  if (!gameActive) return;
+  const rect = canvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+  const gx = Math.floor(mx / TILE_SIZE);
+  const gy = Math.floor(my / TILE_SIZE);
+
+  if (state.buildMode && !isSpectating) {
+    if (state.money < 150) return;
+    const onField = gx >= fieldArea.gx - 1 && gx <= fieldArea.gx + fieldArea.gw;
+    const blocked = walkGrid[gy]?.[gx] === 1 || walkGrid[gy + 1]?.[gx] === 1 ||
+      walkGrid[gy]?.[gx + 1] === 1 || walkGrid[gy + 1]?.[gx + 1] === 1;
+    if (!onField && !blocked && gy < ROWS - 2 && gx < COLS - 2) {
+      sendMsg({ type: 'build_hut', gx, gy });
+    }
+    return;
+  }
+
+  const clickedHut = huts.find(h => gx >= h.gx && gx < h.gx + 2 && gy >= h.gy && gy < h.gy + 2);
+  if (clickedHut) {
+    state.selectedHutId = clickedHut.id;
+    state.activeTab = 'hut';
+    renderSidebar();
+  }
 });
-// --- START GRY ---
-resizeCanvas();
-generateCottonField();
-createHut(3, 4); // Startowa chata
-state.money = 150; // Startowa gotówka na pierwszych pracowników
-renderSidebar();
-let lastTime = performance.now();
-function loop(now) {
-const dt = Math.min(0.1, (now - lastTime) / 1000);
-lastTime = now;
-update(dt);
-draw();
-requestAnimationFrame(loop);
+
+// --- ZAPIS STANU NA SERWER (periodyczny) ---
+let saveCounter = 0;
+function saveStateToServer() {
+  if (!currentVillage || !isLeader || isSpectating) return;
+  sendMsg({ type: 'sync_time', gameMinutes: state.gameMinutes });
+  sendMsg({ type: 'sync_boost', active: state.boost.active, timer: state.boost.timer, cooldownTimer: state.boost.cooldownTimer });
 }
-requestAnimationFrame(loop);
+
+// --- PĘTLA GRY Z OBSŁUGĄ KARTY W TLE ---
+let lastTime = performance.now();
+
+function stepGame(dt) {
+  let remaining = dt;
+  while (remaining > 0) {
+    const stepDt = Math.min(0.05, remaining);
+    update(stepDt);
+    remaining -= stepDt;
+  }
+
+  saveCounter += dt;
+  if (saveCounter >= 10) {
+    saveCounter = 0;
+    saveStateToServer();
+  }
+}
+
+function animLoop(now) {
+  if (!document.hidden) {
+    const dt = Math.min(0.2, (now - lastTime) / 1000);
+    lastTime = now;
+    stepGame(dt);
+    draw();
+  }
+  requestAnimationFrame(animLoop);
+}
+requestAnimationFrame(animLoop);
+
+// Ticker w tle (dla kart w tle, gdy requestAnimationFrame jest wstrzymane)
+setInterval(() => {
+  if (document.hidden && gameActive) {
+    const now = performance.now();
+    const dt = Math.min(1.0, (now - lastTime) / 1000);
+    lastTime = now;
+    stepGame(dt);
+  }
+}, 100);
+
+// Web Worker dla nieaktywnych kart (aby zapobiec dławieniu setInterval do 1s przez przeglądarkę)
+try {
+  const bgBlob = new Blob([`
+    let t = null;
+    self.onmessage = function(e) {
+      if (e.data === 'start' && !t) {
+        t = setInterval(function() { self.postMessage('tick'); }, 100);
+      }
+    };
+  `], { type: 'application/javascript' });
+  const bgWorker = new Worker(URL.createObjectURL(bgBlob));
+  bgWorker.onmessage = function() {
+    if (document.hidden && gameActive) {
+      const now = performance.now();
+      const dt = Math.min(0.5, (now - lastTime) / 1000);
+      lastTime = now;
+      stepGame(dt);
+    }
+  };
+  bgWorker.postMessage('start');
+} catch (e) {
+  // Ignoruj jeśli Web Worker jest zablokowany przez środowisko
+}
+
+// Powiadomienie serwera o widoczności karty
+document.addEventListener('visibilitychange', () => {
+  lastTime = performance.now();
+  sendMsg({ type: 'tab_visibility', visible: !document.hidden });
+});
+
+// START POŁĄCZENIA
+connectWS();
 </script>
 </body>
 </html>
